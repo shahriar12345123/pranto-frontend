@@ -1,0 +1,25 @@
+import React, { useEffect } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
+import { Header } from './Header';
+import { Footer } from './Footer';
+
+export const AppLayout = () => {
+  const location = useLocation();
+
+  // Scroll to top on every route, page, or search/filter change
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [location.pathname, location.search, location.key]);
+
+  return (
+    <div className="flex flex-col min-h-screen bg-slate-50 text-slate-900">
+      <Header />
+      <main className="flex-1">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  );
+};
