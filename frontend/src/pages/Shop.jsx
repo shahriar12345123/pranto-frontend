@@ -8,6 +8,84 @@ import { Button } from '../components/common/Button';
 import { useProducts } from '../context/ProductContext';
 import { categories } from '../data/categories';
 
+// Top-level PriceRangeFilter component to completely isolate input state and prevent focus loss on typing
+const PriceRangeFilter = ({ minPriceParam, maxPriceParam, onApply }) => {
+  const [localMin, setLocalMin] = useState(minPriceParam || '');
+  const [localMax, setLocalMax] = useState(maxPriceParam || '');
+
+  useEffect(() => {
+    setLocalMin(minPriceParam || '');
+  }, [minPriceParam]);
+
+  useEffect(() => {
+    setLocalMax(maxPriceParam || '');
+  }, [maxPriceParam]);
+
+  const handleMinChange = (e) => {
+    const sanitized = e.target.value.replace(/\D/g, '');
+    setLocalMin(sanitized);
+  };
+
+  const handleMaxChange = (e) => {
+    const sanitized = e.target.value.replace(/\D/g, '');
+    setLocalMax(sanitized);
+  };
+
+  const handleBlur = () => {
+    onApply(localMin, localMax);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      onApply(localMin, localMax);
+    }
+  };
+
+  return (
+    <div className="pt-4 border-t border-slate-100">
+      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">
+        Price Budget (৳)
+      </h4>
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <label htmlFor="minPriceInput" className="text-[11px] text-slate-500 block mb-1">
+            Min Budget (৳)
+          </label>
+          <input
+            id="minPriceInput"
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            placeholder="0"
+            value={localMin}
+            onChange={handleMinChange}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            className="w-full h-9 px-2.5 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 text-slate-900 bg-white"
+          />
+        </div>
+        <div>
+          <label htmlFor="maxPriceInput" className="text-[11px] text-slate-500 block mb-1">
+            Max Budget (৳)
+          </label>
+          <input
+            id="maxPriceInput"
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            placeholder="20000"
+            value={localMax}
+            onChange={handleMaxChange}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            className="w-full h-9 px-2.5 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 text-slate-900 bg-white"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const Shop = () => {
   const { products } = useProducts();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -15,24 +93,10 @@ export const Shop = () => {
 
   // URL state
   const selectedCategory = searchParams.get('category') || 'all';
+  const selectedBrand = searchParams.get('brand') || 'all';
   const selectedSort = searchParams.get('sort') || 'featured';
   const minPriceParam = searchParams.get('minPrice') || '';
   const maxPriceParam = searchParams.get('maxPrice') || '';
-  const inStockOnly = searchParams.get('inStock') === 'true';
-  const onSaleOnly = searchParams.get('onSale') === 'true';
-
-  // Local state for price range inputs to prevent page scrolling/jumping while typing
-  const [localMinPrice, setLocalMinPrice] = useState(minPriceParam);
-  const [localMaxPrice, setLocalMaxPrice] = useState(maxPriceParam);
-
-  // Keep local price inputs synced if URL search params change externally
-  useEffect(() => {
-    setLocalMinPrice(minPriceParam);
-  }, [minPriceParam]);
-
-  useEffect(() => {
-    setLocalMaxPrice(maxPriceParam);
-  }, [maxPriceParam]);
 
   // Helper to update URL search params cleanly without resetting scroll position
   const updateFilter = (key, value) => {
@@ -62,51 +126,74 @@ export const Shop = () => {
   };
 
   const clearAllFilters = () => {
-    setLocalMinPrice('');
-    setLocalMaxPrice('');
     setSearchParams({}, { replace: true, preventScrollReset: true });
   };
 
-  const handleMinPriceChange = (e) => {
-    // Enforce numeric only input (digits 0-9)
-    const sanitized = e.target.value.replace(/\D/g, '');
-    setLocalMinPrice(sanitized);
-  };
-
-  const handleMaxPriceChange = (e) => {
-    // Enforce numeric only input (digits 0-9)
-    const sanitized = e.target.value.replace(/\D/g, '');
-    setLocalMaxPrice(sanitized);
-  };
-
-  const handlePriceKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      updatePriceFilter(localMinPrice, localMaxPrice);
-    }
-  };
-
-  const handlePriceBlur = () => {
-    updatePriceFilter(localMinPrice, localMaxPrice);
-  };
+  const searchQuery = searchParams.get('q') || searchParams.get('search') || '';
 
   const hasActiveFilters =
     selectedCategory !== 'all' ||
+    selectedBrand !== 'all' ||
     minPriceParam !== '' ||
     maxPriceParam !== '' ||
-    inStockOnly ||
-    onSaleOnly ||
+    searchQuery !== '' ||
     selectedSort !== 'featured';
+
+  // Available brands derived from products
+  const availableBrands = useMemo(() => {
+    const brandsSet = new Set(products.map((p) => p.brand).filter(Boolean));
+    return Array.from(brandsSet).sort();
+  }, [products]);
 
   // Filter & Sort Logic against mock data
   const filteredProducts = useMemo(() => {
     let result = [...products];
 
-    // Category filter
-    if (selectedCategory && selectedCategory !== 'all') {
-      result = result.filter((p) => p.category === selectedCategory);
+    // Keyword Search filter
+    if (searchQuery) {
+      const rawLower = searchQuery.toLowerCase().trim();
+      const tokens = rawLower.split(/\s+/).filter(Boolean);
+
+      result = result.filter((p) => {
+        const fieldList = [
+          p.name,
+          p.brand,
+          p.category,
+          p.description,
+          p.shortDescription,
+          p.sku,
+          p.slug,
+          Array.isArray(p.tags) ? p.tags.join(' ') : p.tags,
+          Array.isArray(p.features) ? p.features.join(' ') : p.features,
+        ].filter(Boolean);
+
+        const combinedText = fieldList.join(' ').toLowerCase();
+        const combinedTextNoSpaces = combinedText.replace(/[\s\-_]+/g, '');
+
+        return tokens.every((token) => {
+          const tokenNoSpaces = token.replace(/[\s\-_]+/g, '');
+          return (
+            combinedText.includes(token) ||
+            (tokenNoSpaces.length > 2 && combinedTextNoSpaces.includes(tokenNoSpaces))
+          );
+        });
+      });
     }
 
-    // Min price
+    // Earbud Feature Collection filter (if specific category matches)
+    if (selectedCategory && selectedCategory !== 'all' && selectedCategory !== 'wireless-earbuds') {
+      const matched = result.filter((p) => p.category === selectedCategory);
+      if (matched.length > 0) {
+        result = matched;
+      }
+    }
+
+    // Brand filter
+    if (selectedBrand && selectedBrand !== 'all') {
+      result = result.filter((p) => p.brand.toLowerCase() === selectedBrand.toLowerCase());
+    }
+
+    // Min price budget
     if (minPriceParam) {
       const min = Number(minPriceParam);
       if (!isNaN(min)) {
@@ -114,24 +201,12 @@ export const Shop = () => {
       }
     }
 
-    // Max price
+    // Max price budget
     if (maxPriceParam) {
       const max = Number(maxPriceParam);
       if (!isNaN(max)) {
         result = result.filter((p) => p.price <= max);
       }
-    }
-
-    // Stock
-    if (inStockOnly) {
-      result = result.filter((p) => p.stock > 0);
-    }
-
-    // Sale
-    if (onSaleOnly) {
-      result = result.filter(
-        (p) => (p.discount && p.discount > 0) || (p.comparePrice && p.comparePrice > p.price)
-      );
     }
 
     // Sorting
@@ -155,121 +230,59 @@ export const Shop = () => {
     }
 
     return result;
-  }, [selectedCategory, selectedSort, minPriceParam, maxPriceParam, inStockOnly, onSaleOnly]);
+  }, [selectedCategory, selectedBrand, selectedSort, minPriceParam, maxPriceParam, searchQuery, products]);
 
-  const FilterContent = () => (
+  const renderFilterContent = () => (
     <div className="space-y-6">
-      {/* Category Section */}
-      <div>
-        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">
-          Category
-        </h4>
-        <div className="space-y-1">
-          <button
-            type="button"
-            onClick={() => updateFilter('category', 'all')}
-            className={`w-full text-left px-3 py-2 rounded-lg text-sm flex items-center justify-between transition-colors ${
-              selectedCategory === 'all'
-                ? 'bg-blue-50 text-blue-600 font-semibold'
-                : 'text-slate-600 hover:bg-slate-50'
-            }`}
-          >
-            <span>All Categories</span>
-            <span className="text-xs text-slate-400">{products.length}</span>
-          </button>
-          {categories.map((cat) => {
-            const count = products.filter((p) => p.category === cat.slug).length;
-            const isSelected = selectedCategory === cat.slug;
-
-            return (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => updateFilter('category', cat.slug)}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm flex items-center justify-between transition-colors ${
-                  isSelected
-                    ? 'bg-blue-50 text-blue-600 font-semibold'
-                    : 'text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <span>{cat.name}</span>
-                <span className="text-xs text-slate-400">{count}</span>
-              </button>
-            );
-          })}
+      {/* Brand Section */}
+      {availableBrands.length > 0 && (
+        <div>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">
+            Earbud Brand
+          </h4>
+          <div className="space-y-1">
+            <button
+              type="button"
+              onClick={() => updateFilter('brand', 'all')}
+              className={`w-full text-left px-3 py-2 rounded-lg text-sm flex items-center justify-between transition-colors ${
+                selectedBrand === 'all'
+                  ? 'bg-blue-50 text-blue-600 font-semibold'
+                  : 'text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              <span>All Brands</span>
+              <span className="text-xs text-slate-400">{products.length}</span>
+            </button>
+            {availableBrands.map((b) => {
+              const isSelected = selectedBrand.toLowerCase() === b.toLowerCase();
+              const count = products.filter((p) => p.brand?.toLowerCase() === b.toLowerCase()).length;
+              return (
+                <button
+                  key={b}
+                  type="button"
+                  onClick={() => updateFilter('brand', b)}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm flex items-center justify-between transition-colors ${
+                    isSelected
+                      ? 'bg-blue-50 text-blue-600 font-semibold'
+                      : 'text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  <span>{b}</span>
+                  <span className="text-xs text-slate-400">{count}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
+
 
       {/* Price Filter Section */}
-      <div className="pt-4 border-t border-slate-100">
-        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">
-          Price Range (৳)
-        </h4>
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label htmlFor="minPrice" className="text-[11px] text-slate-500 block mb-1">
-              Min (৳)
-            </label>
-            <input
-              id="minPrice"
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              placeholder="0"
-              value={localMinPrice}
-              onChange={handleMinPriceChange}
-              onBlur={handlePriceBlur}
-              onKeyDown={handlePriceKeyDown}
-              className="w-full h-9 px-2.5 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label htmlFor="maxPrice" className="text-[11px] text-slate-500 block mb-1">
-              Max (৳)
-            </label>
-            <input
-              id="maxPrice"
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              placeholder="50000"
-              value={localMaxPrice}
-              onChange={handleMaxPriceChange}
-              onBlur={handlePriceBlur}
-              onKeyDown={handlePriceKeyDown}
-              className="w-full h-9 px-2.5 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Availability Section */}
-      <div className="pt-4 border-t border-slate-100">
-        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">
-          Availability & Offers
-        </h4>
-        <div className="space-y-2 text-sm">
-          <label className="flex items-center gap-2 cursor-pointer text-slate-700">
-            <input
-              type="checkbox"
-              checked={inStockOnly}
-              onChange={(e) => updateFilter('inStock', e.target.checked)}
-              className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-            />
-            <span>In Stock Only</span>
-          </label>
-
-          <label className="flex items-center gap-2 cursor-pointer text-slate-700">
-            <input
-              type="checkbox"
-              checked={onSaleOnly}
-              onChange={(e) => updateFilter('onSale', e.target.checked)}
-              className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-            />
-            <span>On Sale / Discounted</span>
-          </label>
-        </div>
-      </div>
+      <PriceRangeFilter
+        minPriceParam={minPriceParam}
+        maxPriceParam={maxPriceParam}
+        onApply={updatePriceFilter}
+      />
 
       {/* Reset button */}
       {hasActiveFilters && (
@@ -290,8 +303,8 @@ export const Shop = () => {
 
   const activeCategoryObj = categories.find((c) => c.slug === selectedCategory);
   const pageTitle = activeCategoryObj
-    ? `Shop ${activeCategoryObj.name}`
-    : 'Shop All Gadgets & Electronics';
+    ? `${activeCategoryObj.name} - Wireless Earbuds`
+    : 'Shop Wireless Earbuds';
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
@@ -299,26 +312,26 @@ export const Shop = () => {
         title={pageTitle}
         description={
           activeCategoryObj
-            ? `Browse our top collection of genuine ${activeCategoryObj.name.toLowerCase()} with official warranty and fast Cash on Delivery in Bangladesh.`
-            : 'Explore all smart electronics, audio gear, chargers, cables, and mobile accessories with fast delivery across Bangladesh.'
+            ? `Explore genuine ${activeCategoryObj.name.toLowerCase()} wireless earbuds with official warranty and fast Cash on Delivery in Bangladesh.`
+            : 'Explore genuine TWS and ANC wireless earbuds from Anker, Baseus, QCY, Soundpeats, and Realme with fast delivery across Bangladesh.'
         }
-        keywords="shop gadgets bd, online tech store bangladesh, buy electronics bd"
+        keywords="wireless earbuds bd, buy tws earbuds bangladesh, anc earbuds dhaka"
       />
       {/* Breadcrumb */}
-      <Breadcrumb items={[{ label: 'Shop All Products' }]} />
+      <Breadcrumb items={[{ label: 'Shop Earbuds' }]} />
 
       {/* Header Banner */}
       <div className="mt-2 mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200/80 pb-6">
         <div>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight">
-            Shop All Products
+            Shop Wireless Earbuds
           </h1>
           <p className="text-sm sm:text-base text-slate-500 mt-1">
-            Discover our complete collection of genuine gadgets and accessories.
+            Discover our complete collection of genuine TWS & Active Noise Cancelling Earbuds.
           </p>
         </div>
         <p className="text-sm font-semibold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg shrink-0">
-          Showing {filteredProducts.length} products
+          Showing {filteredProducts.length} earbuds
         </p>
       </div>
 
@@ -337,11 +350,11 @@ export const Shop = () => {
               </button>
             )}
           </div>
-          <FilterContent />
+          {renderFilterContent()}
         </aside>
 
         {/* Right Product Grid Area */}
-        <div className="lg:col-span-9 flex flex-col gap-6">
+        <div className="lg:col-span-9 flex flex-col gap-6 min-h-[500px] sm:min-h-[650px]">
           {/* Controls Bar (Mobile filter toggle + Sorting) */}
           <div className="flex items-center justify-between gap-3 bg-white border border-slate-200 p-3 sm:p-4 rounded-xl shadow-xs">
             {/* Mobile Filter Button */}
@@ -381,26 +394,18 @@ export const Shop = () => {
           {hasActiveFilters && (
             <div className="flex items-center gap-2 flex-wrap text-xs">
               <span className="text-slate-400 font-medium">Active:</span>
+              {searchQuery && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200">
+                  Search: "{searchQuery}"
+                  <button onClick={() => updateFilter('q', '')}>
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              )}
               {selectedCategory !== 'all' && (
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 border border-blue-200">
                   Category: {selectedCategory}
                   <button onClick={() => updateFilter('category', 'all')}>
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              )}
-              {inStockOnly && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  In Stock Only
-                  <button onClick={() => updateFilter('inStock', false)}>
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              )}
-              {onSaleOnly && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 border border-amber-200">
-                  On Sale
-                  <button onClick={() => updateFilter('onSale', false)}>
                     <X className="w-3 h-3" />
                   </button>
                 </span>
@@ -410,8 +415,6 @@ export const Shop = () => {
                   Price: ৳{minPriceParam || 0} - ৳{maxPriceParam || '∞'}
                   <button
                     onClick={() => {
-                      setLocalMinPrice('');
-                      setLocalMaxPrice('');
                       updatePriceFilter('', '');
                     }}
                   >
@@ -451,7 +454,7 @@ export const Shop = () => {
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <FilterContent />
+              {renderFilterContent()}
             </div>
 
             <div className="pt-6 border-t border-slate-100 mt-6">

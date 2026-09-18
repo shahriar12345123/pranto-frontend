@@ -58,7 +58,7 @@ export const Footer = () => {
               <img src={logo} alt="Gazet Logo" className="h-12 w-auto filter brightness-0 invert" />
             </Link>
             <p className="text-sm text-slate-400 leading-relaxed">
-              Your trusted destination for smart gadgets, mobile essentials, and everyday technology accessories in Bangladesh.
+              Your trusted destination for genuine TWS & Active Noise Cancelling Wireless Earbuds in Bangladesh.
             </p>
             <div className="pt-2">
               <span className="inline-block px-3 py-1 text-xs font-semibold rounded-md bg-slate-800 text-emerald-400 border border-slate-700">
@@ -80,12 +80,7 @@ export const Footer = () => {
               </li>
               <li>
                 <Link to="/shop" className="hover:text-blue-400 transition-colors">
-                  All Products
-                </Link>
-              </li>
-              <li>
-                <Link to="/categories" className="hover:text-blue-400 transition-colors">
-                  Categories
+                  Shop Earbuds
                 </Link>
               </li>
               <li>

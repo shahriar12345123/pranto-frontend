@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Zap, Minus, Plus } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { ProductPrice } from './ProductPrice';
-import { ProductRating } from './ProductRating';
 
 export const ProductCard = ({ product }) => {
   const navigate = useNavigate();
@@ -77,26 +76,16 @@ export const ProductCard = ({ product }) => {
 
         {/* Badges Container */}
         <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10">
-          {discountPercent && (
-            <span className="px-2 py-0.5 text-[10px] sm:text-xs font-extrabold uppercase tracking-wider bg-red-600 text-white rounded-lg shadow-sm">
-              {discountPercent}% OFF
-            </span>
-          )}
+          <span className="px-2 py-0.5 text-[10px] sm:text-xs font-semibold bg-emerald-600 text-white rounded-lg shadow-sm flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-200 animate-pulse" />
+            In Stock
+          </span>
           {product.featured && (
             <span className="px-2 py-0.5 text-[10px] sm:text-xs font-bold bg-blue-600 text-white rounded-lg shadow-sm">
-              Popular
+              Featured
             </span>
           )}
         </div>
-
-        {/* Stock Badge if low */}
-        {product.stock <= 5 && product.stock > 0 && (
-          <div className="absolute bottom-2.5 left-2.5 z-10">
-            <span className="px-2 py-0.5 text-[10px] font-bold bg-amber-100/90 backdrop-blur-md text-amber-800 rounded-md border border-amber-200">
-              Only {product.stock} left
-            </span>
-          </div>
-        )}
       </Link>
 
       {/* Content Area */}
@@ -104,8 +93,7 @@ export const ProductCard = ({ product }) => {
         <div className="space-y-1.5">
           {/* Brand or Category */}
           <div className="flex items-center justify-between text-[11px] text-slate-400 font-semibold uppercase tracking-wider">
-            <span className="truncate max-w-[100px]">{product.brand || product.category}</span>
-            <ProductRating rating={product.rating} reviewCount={product.reviewCount} showCount={false} />
+            <span className="truncate max-w-[150px]">{product.brand || product.category}</span>
           </div>
 
           {/* Title */}

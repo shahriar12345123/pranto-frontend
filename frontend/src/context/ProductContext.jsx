@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { products as fallbackProducts } from '../data/products';
 
 const ProductContext = createContext(null);
 
 export const ProductProvider = ({ children }) => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState(fallbackProducts);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -18,14 +19,14 @@ export const ProductProvider = ({ children }) => {
         throw new Error(`Failed to load products (${res.status})`);
       }
       const json = await res.json();
-      if (json.success && Array.isArray(json.data)) {
+      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
         setProducts(json.data);
       } else {
-        setProducts([]);
+        setProducts(fallbackProducts);
       }
     } catch (err) {
-      console.error('Failed to fetch products from backend:', err);
-      setError(err.message || 'Unable to load products');
+      console.warn('Backend offline or unreachable, using local fallback products:', err.message);
+      setProducts(fallbackProducts);
     } finally {
       setLoading(false);
     }

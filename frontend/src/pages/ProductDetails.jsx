@@ -15,7 +15,6 @@ import { Breadcrumb } from '../components/common/Breadcrumb';
 import { SEO } from '../components/common/SEO';
 import { ProductGallery } from '../components/product/ProductGallery';
 import { ProductPrice } from '../components/product/ProductPrice';
-import { ProductRating } from '../components/product/ProductRating';
 import { ProductSpecsTable } from '../components/product/ProductSpecsTable';
 import { RelatedProducts } from '../components/product/RelatedProducts';
 import { Button } from '../components/common/Button';
@@ -113,11 +112,6 @@ export const ProductDetails = () => {
         "@type": "Organization",
         "name": "Gazet"
       }
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": product.rating || 4.8,
-      "reviewCount": product.reviewCount || 10
     }
   };
 
@@ -166,15 +160,6 @@ export const ProductDetails = () => {
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug">
               {product.name}
             </h1>
-
-            {/* Rating & Reviews */}
-            <div className="flex items-center gap-3">
-              <ProductRating rating={product.rating} reviewCount={product.reviewCount} size="md" />
-              <span className="text-slate-300">|</span>
-              <span className="text-xs sm:text-sm text-slate-500">
-                {product.reviewCount} customer reviews
-              </span>
-            </div>
 
             {/* Price section */}
             <div className="pt-2">

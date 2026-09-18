@@ -47,10 +47,8 @@ export const Header = () => {
 
   const mainNav = [
     { to: '/', label: 'Home' },
-    { to: '/shop', label: 'Shop' },
-    { to: '/categories', label: 'Categories' },
-    { to: '/shop?onSale=true', label: 'Deals' },
-    { to: '/about', label: 'About' },
+    { to: '/shop', label: 'Shop Earbuds' },
+    { to: '/about', label: 'About Us' },
     { to: '/contact', label: 'Contact' },
   ];
 

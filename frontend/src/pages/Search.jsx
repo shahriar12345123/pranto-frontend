@@ -16,16 +16,34 @@ export const Search = () => {
   const searchResults = useMemo(() => {
     if (!query) return [];
 
-    const lower = query.toLowerCase().trim();
+    const rawLower = query.toLowerCase().trim();
+    const tokens = rawLower.split(/\s+/).filter(Boolean);
+
     return products.filter((p) => {
-      const matchName = p.name?.toLowerCase().includes(lower);
-      const matchBrand = p.brand?.toLowerCase().includes(lower);
-      const matchCategory = p.category?.toLowerCase().includes(lower);
-      const matchDesc = p.description?.toLowerCase().includes(lower);
-      const matchSku = p.sku?.toLowerCase().includes(lower);
-      return matchName || matchBrand || matchCategory || matchDesc || matchSku;
+      const fieldList = [
+        p.name,
+        p.brand,
+        p.category,
+        p.description,
+        p.shortDescription,
+        p.sku,
+        p.slug,
+        Array.isArray(p.tags) ? p.tags.join(' ') : p.tags,
+        Array.isArray(p.features) ? p.features.join(' ') : p.features,
+      ].filter(Boolean);
+
+      const combinedText = fieldList.join(' ').toLowerCase();
+      const combinedTextNoSpaces = combinedText.replace(/[\s\-_]+/g, '');
+
+      return tokens.every((token) => {
+        const tokenNoSpaces = token.replace(/[\s\-_]+/g, '');
+        return (
+          combinedText.includes(token) ||
+          (tokenNoSpaces.length > 2 && combinedTextNoSpaces.includes(tokenNoSpaces))
+        );
+      });
     });
-  }, [query]);
+  }, [products, query]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">

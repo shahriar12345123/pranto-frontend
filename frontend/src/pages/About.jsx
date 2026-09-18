@@ -62,7 +62,7 @@ export const About = () => {
 
       {/* Stats/Highlight Banner */}
       <div className="rounded-3xl bg-slate-900 text-white p-8 sm:p-12 mb-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
           <div>
             <p className="text-3xl sm:text-4xl font-black text-blue-400">100%</p>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">Authentic Products</p>
@@ -70,10 +70,6 @@ export const About = () => {
           <div>
             <p className="text-3xl sm:text-4xl font-black text-emerald-400">64</p>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">Districts Covered</p>
-          </div>
-          <div>
-            <p className="text-3xl sm:text-4xl font-black text-amber-400">7 Days</p>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1">Replacement Warranty</p>
           </div>
           <div>
             <p className="text-3xl sm:text-4xl font-black text-purple-400">COD</p>

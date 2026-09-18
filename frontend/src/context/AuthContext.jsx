@@ -47,6 +47,27 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+  const reportLoginToBackend = async (userData, extra = {}) => {
+    if (!userData?.id) return;
+    try {
+      await fetch(`${API_URL}/auth/login-event`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: userData.id,
+          email: userData.email,
+          fullName: userData.user_metadata?.full_name || extra.fullName,
+          phone: userData.user_metadata?.phone || extra.phone,
+          authProvider: 'email',
+        }),
+      });
+    } catch (err) {
+      console.warn('Failed to record login event to backend:', err.message);
+    }
+  };
+
   // Sign up with Full Name, Phone Number, Email, Password
   const signUp = async ({ email, password, fullName, phone }) => {
     try {
@@ -62,6 +83,9 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (error) throw error;
+      if (data?.user) {
+        reportLoginToBackend(data.user, { fullName, phone });
+      }
       return { data, error: null };
     } catch (error) {
       return { data: null, error };
@@ -77,6 +101,9 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (error) throw error;
+      if (data?.user) {
+        reportLoginToBackend(data.user);
+      }
       return { data, error: null };
     } catch (error) {
       return { data: null, error };

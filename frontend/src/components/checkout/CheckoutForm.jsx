@@ -1,16 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Truck, Banknote } from 'lucide-react';
 import { Input } from '../common/Input';
 import { Select } from '../common/Select';
 import { Button } from '../common/Button';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
+import { useProducts } from '../../context/ProductContext';
+import { useToast } from '../../context/ToastContext';
 import { siteConfig } from '../../data/site';
 import { safeSessionStorage } from '../../utils/security';
 
 export const CheckoutForm = ({ items = [], deliveryCharge = 70, onDivisionChange, isDirectBuy = false }) => {
   const navigate = useNavigate();
   const { clearCart } = useCart();
+  const { user, session } = useAuth();
+  const { refreshProducts } = useProducts();
+  const { addToast } = useToast();
+
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -24,6 +32,17 @@ export const CheckoutForm = ({ items = [], deliveryCharge = 70, onDivisionChange
     orderNotes: '',
     paymentMethod: 'cod',
   });
+
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        fullName: prev.fullName || user.user_metadata?.full_name || '',
+        phone: prev.phone || user.user_metadata?.phone || '',
+        email: prev.email || user.email || '',
+      }));
+    }
+  }, [user]);
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,7 +69,6 @@ export const CheckoutForm = ({ items = [], deliveryCharge = 70, onDivisionChange
       return updated;
     });
 
-    // Clear field error on change
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }));
     }
@@ -85,31 +103,67 @@ export const CheckoutForm = ({ items = [], deliveryCharge = 70, onDivisionChange
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
     if (items.length === 0) return;
 
     setIsSubmitting(true);
 
-    // Simulate short network request
-    setTimeout(() => {
-      // Generate realistic order ID (e.g. ORD-20260917-4821)
-      const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-      const randomDigits = Math.floor(1000 + Math.random() * 9000);
-      const generatedOrderId = `ORD-${dateStr}-${randomDigits}`;
+    try {
+      const payload = {
+        customer: formData,
+        items: items.map((i) => ({
+          id: i.id,
+          name: i.name,
+          sku: i.sku || '',
+          price: Number(i.price),
+          quantity: Number(i.quantity) || 1,
+          image: i.image || '',
+        })),
+        deliveryCharge,
+        total: totalAmount,
+        paymentMethod: formData.paymentMethod || 'cod',
+      };
+
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`;
+      }
+
+      const res = await fetch(`${API_URL}/orders`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok || !result.success) {
+        throw new Error(result.message || 'Failed to place order');
+      }
+
+      const orderData = result.data;
+      const orderId = orderData.orderId;
 
       // Save order details to sessionStorage for OrderSuccess page to display cleanly
       const orderDetails = {
-        orderId: generatedOrderId,
+        orderId: orderId,
         customer: formData,
         items: items,
         deliveryCharge,
         total: totalAmount,
-        createdAt: new Date().toISOString(),
+        createdAt: orderData.createdAt || new Date().toISOString(),
       };
 
-      safeSessionStorage.setItem(`order_${generatedOrderId}`, JSON.stringify(orderDetails));
+      safeSessionStorage.setItem(`order_${orderId}`, JSON.stringify(orderDetails));
+
+      // Refresh product stock in context
+      if (typeof refreshProducts === 'function') {
+        refreshProducts();
+      }
 
       // Clear direct buy temporary session storage
       try {
@@ -123,11 +177,16 @@ export const CheckoutForm = ({ items = [], deliveryCharge = 70, onDivisionChange
         clearCart();
       }
 
-      setIsSubmitting(false);
+      addToast(`Order ${orderId} placed successfully!`, 'success');
 
       // Navigate to order success screen
-      navigate(`/order-success/${generatedOrderId}`);
-    }, 600);
+      navigate(`/order-success/${orderId}`);
+    } catch (err) {
+      console.error('Order submission error:', err);
+      addToast(err.message || 'Unable to place order. Please try again.', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const availableDistricts = siteConfig.districtsByDivision[formData.division] || [];

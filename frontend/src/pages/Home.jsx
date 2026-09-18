@@ -31,74 +31,74 @@ export const Home = () => {
   const [isAnimating, setIsAnimating] = useState(true);
   const timerRef = React.useRef(null);
 
-  // 3 Hero Banners
+  // 3 Hero Banners for Earbuds
   const heroBanners = [
     {
       id: 1,
-      tag: "Top Rated Gadgets in Bangladesh",
+      tag: "Official 7 Days Warranty",
       tagIcon: Zap,
       tagColor: "bg-blue-50 border-blue-200/80 text-blue-700",
-      title: "Smart Audio.",
-      titleHighlight: "Better Everyday.",
+      title: "Hoco WQ34plus.",
+      titleHighlight: "Only ৳790.",
       highlightColor: "text-blue-600",
-      description: "Discover useful gadgets and accessories designed to make your everyday life easier. Premium audio, wearables, chargers, and tech essentials with Cash on Delivery nationwide.",
-      cta1Text: "Shop Earbuds",
-      cta1Link: "/category/earbuds",
-      cta2Text: "Explore Categories",
-      cta2Link: "/categories",
-      image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&auto=format&fit=crop&q=80",
-      imageAlt: "Baseus Bowie M2+ ANC Wireless Earbuds",
-      badgeTitle: "Verified Quality",
-      badgeSubtitle: "Official Brand Warranty",
+      description: "Experience premium TWS sound with the Hoco WQ34plus. Featuring 7 days warranty, 3 days replacement guarantee, 250 pcs in stock, and nationwide Cash on Delivery.",
+      cta1Text: "Buy Now - ৳790",
+      cta1Link: "/product/hoco-wq34plus",
+      cta2Text: "Shop Earbuds",
+      cta2Link: "/shop",
+      image: "https://pub-844c0557c33f43fb8bc62d1b17aa1e96.r2.dev/products/prod-001/image-1.jpg",
+      imageAlt: "Hoco WQ34plus Wireless Earbuds",
+      badgeTitle: "7 Days Warranty",
+      badgeSubtitle: "3 Days Replacement",
       badgeIcon: ShieldCheck,
       badgeIconColor: "bg-emerald-50 text-emerald-600",
-      floatingStockText: "In Stock Ready to Ship",
+      floatingStockText: "250 In Stock",
       bgGradient: "from-slate-100/90 via-white to-blue-50/50",
       visualBg: "from-blue-600/10 via-slate-100 to-indigo-50",
     },
     {
       id: 2,
-      tag: "Next-Gen AMOLED Displays",
+      tag: "Black & White Available",
       tagIcon: Sparkles,
       tagColor: "bg-indigo-50 border-indigo-200/80 text-indigo-700",
-      title: "Track Health.",
-      titleHighlight: "Elevate Lifestyle.",
+      title: "Apple 2nd Gen.",
+      titleHighlight: "Special ৳550.",
       highlightColor: "text-indigo-600",
-      description: "Explore sleek smartwatches with 120+ sports modes, all-day SpO2 & heart rate monitoring, GPS tracking, and 15-day ultra-long battery endurance.",
-      cta1Text: "Shop Smartwatches",
-      cta1Link: "/category/smart-watches",
-      cta2Text: "View Best Sellers",
+      description: "Iconic semi-in-ear true wireless earbuds with effortless touch controls, crystal-clear audio, and 200 pcs available in Black and White colors.",
+      cta1Text: "Buy Now - ৳550",
+      cta1Link: "/product/apple-2nd-generation-earbuds",
+      cta2Text: "View Earbuds",
       cta2Link: "/shop",
-      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop&q=80",
-      imageAlt: "Amazfit GTS 4 Mini Smart Watch",
-      badgeTitle: "15-Day Battery",
-      badgeSubtitle: "5 ATM Water Resistance",
+      image: "https://pub-844c0557c33f43fb8bc62d1b17aa1e96.r2.dev/products/prod-002/image-1.jpg",
+      imageAlt: "Apple 2nd Generation Wireless Earbuds",
+      badgeTitle: "Dual Colors",
+      badgeSubtitle: "Black / White",
       badgeIcon: Sparkles,
       badgeIconColor: "bg-indigo-50 text-indigo-600",
-      floatingStockText: "Popular Choice",
+      floatingStockText: "200 In Stock",
       bgGradient: "from-indigo-50/70 via-white to-slate-50",
       visualBg: "from-indigo-600/10 via-slate-100 to-purple-50",
     },
     {
       id: 3,
-      tag: "Fast Charging Technology",
+      tag: "3 Months Warranty & Guarantee",
       tagIcon: Zap,
       tagColor: "bg-emerald-50 border-emerald-200/80 text-emerald-700",
-      title: "Power Up.",
-      titleHighlight: "Anywhere, Fast.",
+      title: "UISI Neckband.",
+      titleHighlight: "Only ৳899.",
       highlightColor: "text-emerald-600",
-      description: "Ultra-fast 65W & 100W GaN chargers and ultra-slim 20,000mAh laptop power banks to keep your MacBook, iPhone, and Android powered throughout the day.",
-      cta1Text: "Shop Fast Chargers",
-      cta1Link: "/category/chargers",
-      cta2Text: "Power Banks",
-      cta2Link: "/category/power-banks",
-      image: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=800&auto=format&fit=crop&q=80",
-      imageAlt: "Anker GaNPrime Multi-Port Charger",
-      badgeTitle: "GaNFast 65W/100W",
-      badgeSubtitle: "Multi-Device Fast PD",
-      badgeIcon: Zap,
+      description: "Ultra-flexible sport wireless neckband with magnetic earbuds, deep bass tuning, 3 months warranty, 3 months guarantee, 7 days replacement, and 120 pcs stock.",
+      cta1Text: "Buy Now - ৳899",
+      cta1Link: "/product/uisi-neckband",
+      cta2Text: "Explore Shop",
+      cta2Link: "/shop",
+      image: "https://pub-844c0557c33f43fb8bc62d1b17aa1e96.r2.dev/products/prod-003/image-1.jpg",
+      imageAlt: "UISI Bluetooth Neckband",
+      badgeTitle: "3 Months Warranty",
+      badgeSubtitle: "7 Days Replacement",
+      badgeIcon: ShieldCheck,
       badgeIconColor: "bg-emerald-50 text-emerald-600",
-      floatingStockText: "Super Fast PD",
+      floatingStockText: "120 In Stock",
       bgGradient: "from-emerald-50/60 via-white to-slate-50",
       visualBg: "from-emerald-600/10 via-slate-100 to-teal-50",
     },
@@ -367,51 +367,25 @@ export const Home = () => {
         </div>
       </section>
 
-      {/* 2. CATEGORY SHOWCASE */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 sm:mb-8 md:mb-10 gap-3 sm:gap-4">
-          <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-600 mb-1 block">
-              Categories
-            </span>
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Shop by Category
-            </h2>
-            <p className="text-xs sm:text-sm md:text-base text-slate-500 mt-0.5 sm:mt-1">
-              Find the right gadget for every need.
-            </p>
-          </div>
-          <Link
-            to="/categories"
-            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
-          >
-            <span>View All Categories</span>
-            <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </Link>
-        </div>
-
-        <CategoryGrid categories={categories} variant="showcase" limit={8} />
-      </section>
-
       {/* 3. FEATURED PRODUCTS */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 sm:mb-8 md:mb-10 gap-3 sm:gap-4">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-blue-600 mb-1 block">
-              Handpicked
+              Handpicked Audio
             </span>
             <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Featured Products
+              Featured Earbuds
             </h2>
             <p className="text-xs sm:text-sm md:text-base text-slate-500 mt-0.5 sm:mt-1">
-              Our handpicked gadgets for you.
+              Top performing wireless earbuds selected by our audio team.
             </p>
           </div>
           <Link
             to="/shop"
             className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
           >
-            <span>Explore Full Shop</span>
+            <span>Explore Full Catalog</span>
             <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </Link>
         </div>
@@ -428,18 +402,18 @@ export const Home = () => {
           <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-center">
             <div className="md:col-span-8 space-y-3 sm:space-y-4">
               <span className="inline-block px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-[10px] sm:text-xs font-semibold uppercase tracking-wider">
-                Limited Time Deals
+                100% Genuine Audio Store
               </span>
               <h2 className="text-xl sm:text-3xl md:text-4xl font-black text-white tracking-tight leading-tight">
-                Upgrade Your Setup
+                Upgrade Your Wireless Sound
               </h2>
               <p className="text-xs sm:text-base text-slate-300 max-w-xl leading-relaxed">
-                Get the gadgets you actually need, without paying more than you should. High-speed multi-port GaN chargers, ergonomic accessories, and studio headphones on special offer.
+                Experience high-definition wireless sound, crystal-clear 6-mic ENC calls, and low latency mobile gaming with official brand warranty and nationwide Cash on Delivery across Bangladesh.
               </p>
               <div className="pt-1 sm:pt-2">
-                <Link to="/shop?onSale=true">
+                <Link to="/shop">
                   <Button variant="primary" size="md" className="sm:size-lg" icon={ArrowRight} iconPosition="right">
-                    Explore Deals
+                    Shop Earbuds Now
                   </Button>
                 </Link>
               </div>
@@ -448,8 +422,8 @@ export const Home = () => {
             <div className="md:col-span-4 flex items-center justify-center">
               <div className="relative aspect-square w-48 sm:w-60 md:w-64 lg:w-72 bg-slate-800/80 rounded-2xl p-4 sm:p-6 border border-slate-700 flex items-center justify-center">
                 <img
-                  src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80"
-                  alt="Sony Headphones Special Deal"
+                  src="https://pub-844c0557c33f43fb8bc62d1b17aa1e96.r2.dev/products/prod-001/image-1.jpg"
+                  alt="Hoco WQ34plus Wireless Earbuds"
                   className="w-full h-full object-contain hover:scale-105 transition-transform duration-300 drop-shadow-2xl"
                 />
               </div>

@@ -29,9 +29,7 @@ export const MobileMenu = ({ isOpen, onClose }) => {
 
   const navLinks = [
     { to: '/', label: 'Home' },
-    { to: '/shop', label: 'Shop All' },
-    { to: '/categories', label: 'Categories' },
-    { to: '/shop?onSale=true', label: 'Deals & Offers', badge: 'Sale' },
+    { to: '/shop', label: 'Shop Earbuds' },
     { to: '/about', label: 'About Us' },
     { to: '/contact', label: 'Contact Support' },
     { to: '/faq', label: 'FAQ' },
@@ -136,16 +134,16 @@ export const MobileMenu = ({ isOpen, onClose }) => {
             ))}
           </nav>
 
-          {/* Popular Categories list */}
+          {/* Earbud Collections list */}
           <div className="px-4 py-3 border-t border-slate-100">
             <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-              Top Categories
+              Earbud Collections
             </h4>
             <div className="grid grid-cols-2 gap-2">
               {categories.slice(0, 6).map((cat) => (
                 <Link
                   key={cat.id}
-                  to={`/category/${cat.slug}`}
+                  to={`/shop?category=${cat.slug}`}
                   onClick={onClose}
                   className="text-xs text-slate-600 hover:text-blue-600 py-1.5 px-2 rounded-lg bg-slate-50 hover:bg-blue-50/50 truncate block"
                 >
