@@ -28,7 +28,7 @@ export const Profile = () => {
   const [addresses, setAddresses] = useState([]);
   const [loadingData, setLoadingData] = useState(false);
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  const API_URL = import.meta.env.VITE_API_URL || 'https://pranto-backend-1.onrender.com/api';
 
   useEffect(() => {
     const fetchUserData = async () => {

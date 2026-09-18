@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  const API_URL = import.meta.env.VITE_API_URL || 'https://pranto-backend-1.onrender.com/api';
 
   const reportLoginToBackend = async (userData, extra = {}) => {
     if (!userData?.id) return;

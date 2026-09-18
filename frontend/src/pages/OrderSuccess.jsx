@@ -93,7 +93,7 @@ export const OrderSuccess = () => {
 
         {/* Order Details Card */}
         <div className="my-8 p-5 sm:p-6 rounded-2xl bg-slate-50 border border-slate-200 text-left space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200 gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200 gap-3">
             <div>
               <span className="text-xs text-slate-400 font-medium">Order Number</span>
               <p className="font-mono font-bold text-slate-900 text-base sm:text-lg">
@@ -101,12 +101,30 @@ export const OrderSuccess = () => {
               </p>
             </div>
             <div className="text-left sm:text-right">
-              <span className="text-xs text-slate-400 font-medium">Payment Method</span>
-              <p className="font-semibold text-emerald-700 text-sm">
-                Cash on Delivery (COD)
+              <span className="text-xs text-slate-400 font-medium">Payment Method & Status</span>
+              <p className="font-bold text-slate-900 text-sm">
+                {orderDetails?.paymentMethod === 'bkash' && 'bKash (Manual Payment)'}
+                {orderDetails?.paymentMethod === 'nagad' && 'Nagad (Manual Payment)'}
+                {orderDetails?.paymentMethod === 'rocket' && 'Rocket (Manual Payment)'}
+                {(!orderDetails?.paymentMethod || orderDetails?.paymentMethod === 'cod') && 'Cash on Delivery (COD)'}
               </p>
+              <div className="mt-1 flex sm:justify-end">
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+                  Pending Admin Confirmation
+                </span>
+              </div>
             </div>
           </div>
+
+          {/* If Transaction ID exists, show TrxID card */}
+          {orderDetails?.transactionId && (
+            <div className="p-3 bg-white border border-slate-200 rounded-xl flex items-center justify-between text-xs">
+              <span className="text-slate-500 font-medium">Submitted Transaction ID (TrxID):</span>
+              <span className="font-mono font-bold text-slate-900 tracking-wider bg-slate-100 px-2 py-0.5 rounded">
+                {orderDetails.transactionId}
+              </span>
+            </div>
+          )}
 
           {/* If items are stored in session, display them */}
           {orderDetails?.items && orderDetails.items.length > 0 && (
@@ -146,19 +164,37 @@ export const OrderSuccess = () => {
             </div>
           )}
 
-          {/* Total */}
-          <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
-            <span className="text-sm font-bold text-slate-900">Total Payable Amount</span>
-            <span className="text-xl sm:text-2xl font-black text-blue-600">
-              ৳{formatPrice(orderDetails?.total || 0)}
-            </span>
+          {/* Pricing Breakdown */}
+          <div className="pt-3 border-t border-slate-200 space-y-1.5 text-xs text-slate-600">
+            {orderDetails?.subtotal && (
+              <div className="flex justify-between">
+                <span>Subtotal</span>
+                <span className="font-medium text-slate-900">৳{formatPrice(orderDetails.subtotal)}</span>
+              </div>
+            )}
+            {orderDetails?.deliveryCharge !== undefined && (
+              <div className="flex justify-between">
+                <span>Delivery Charge</span>
+                <span className="font-medium text-slate-900">৳{formatPrice(orderDetails.deliveryCharge)}</span>
+              </div>
+            )}
+            <div className="pt-2 border-t border-slate-200 flex items-center justify-between">
+              <span className="text-sm font-bold text-slate-900">Total Amount</span>
+              <span className="text-xl sm:text-2xl font-black text-blue-600">
+                ৳{formatPrice(orderDetails?.total || 0)}
+              </span>
+            </div>
           </div>
         </div>
 
         {/* Confirmation Note */}
-        <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-slate-500 mb-8 bg-blue-50/60 text-blue-800 p-3.5 rounded-xl">
+        <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-slate-600 mb-8 bg-blue-50/70 text-blue-900 p-3.5 rounded-xl text-left sm:text-center">
           <PhoneCall className="w-4 h-4 text-blue-600 shrink-0" />
-          <span>Our representative will call your phone number to verify and dispatch your package.</span>
+          <span>
+            {orderDetails?.paymentMethod && orderDetails.paymentMethod !== 'cod'
+              ? 'Our verification team will review your payment transaction and contact you to confirm shipment dispatch.'
+              : 'Our representative will call your phone number to verify and dispatch your package.'}
+          </span>
         </div>
 
         {/* Action Buttons */}
