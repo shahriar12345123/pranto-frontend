@@ -9,8 +9,6 @@ const lazyPage = (importFn, exportName) =>
 // Lazy-loaded route components for performance optimization & smaller initial bundle size
 const Home = lazyPage(() => import('../pages/Home'), 'Home');
 const Shop = lazyPage(() => import('../pages/Shop'), 'Shop');
-const Categories = lazyPage(() => import('../pages/Categories'), 'Categories');
-const Category = lazyPage(() => import('../pages/Category'), 'Category');
 const ProductDetails = lazyPage(() => import('../pages/ProductDetails'), 'ProductDetails');
 const Search = lazyPage(() => import('../pages/Search'), 'Search');
 const Cart = lazyPage(() => import('../pages/Cart'), 'Cart');
@@ -41,8 +39,6 @@ export const AppRoutes = () => {
         <Route path="/" element={<AppLayout />}>
           <Route index element={<Home />} />
           <Route path="shop" element={<Shop />} />
-          <Route path="categories" element={<Categories />} />
-          <Route path="category/:slug" element={<Category />} />
           <Route path="product/:slug" element={<ProductDetails />} />
           <Route path="product/id/:id" element={<ProductDetails />} />
           <Route path="search" element={<Search />} />

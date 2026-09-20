@@ -796,7 +796,9 @@ export const CheckoutForm = ({ items = [], deliveryCharge = 70, onDivisionChange
           className="w-full shadow-md hover:shadow-lg transition-all"
         >
           <span className="truncate">
-            Place Order Now (৳{formatPrice(totalAmount)})
+            {formData.paymentMethod === 'cod'
+              ? `Confirm Order — Pay ৳${formatPrice(deliveryCharge)} Delivery Charge Now`
+              : `Place Order Now (৳${formatPrice(totalAmount)})`}
           </span>
         </Button>
       </div>

@@ -59,8 +59,8 @@ export const ProductDetails = () => {
 
   const categoryObj = categories.find((c) => c.slug === product.category);
 
-  const productColors = Array.isArray(product?.colors) && product.colors.length > 0 ? product.colors : [];
-  const [selectedColor, setSelectedColor] = useState(() => (productColors[0] || ''));
+  const productColors = Array.isArray(product?.colors) && product.colors.length > 0 ? product.colors : ['Black', 'White'];
+  const [selectedColor, setSelectedColor] = useState(() => (productColors[0] || 'Black'));
 
   const handleDecrease = () => {
     setQuantity((prev) => Math.max(1, prev - 1));
