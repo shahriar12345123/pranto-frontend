@@ -63,8 +63,10 @@ export const CartProvider = ({ children }) => {
     }
   }, [cartItems, user]);
 
-  const addToCart = async (product, quantity = 1, showNotification = true) => {
+  const addToCart = async (product, quantity = 1, selectedColor = '', showNotification = true) => {
     if (!product || !product.id || quantity <= 0) return;
+
+    const chosenColor = selectedColor || product.selectedColor || (Array.isArray(product.colors) && product.colors.length > 0 ? product.colors[0] : '');
 
     const formattedItem = {
       id: product.id,
@@ -77,11 +79,12 @@ export const CartProvider = ({ children }) => {
       image: product.image || (Array.isArray(product.images) ? product.images[0] : (typeof product.images === 'string' ? product.images : '')),
       stock: product.stock ?? 99,
       quantity: Math.min(quantity, product.stock || 99),
+      selectedColor: chosenColor,
     };
 
     // Immediate optimistic state update
     setCartItems((prevItems) => {
-      const existingItemIndex = prevItems.findIndex((item) => item.id === product.id);
+      const existingItemIndex = prevItems.findIndex((item) => item.id === product.id && item.selectedColor === chosenColor);
 
       if (existingItemIndex > -1) {
         const updated = [...prevItems];

@@ -31,10 +31,12 @@ export const Profile = () => {
   const API_URL = import.meta.env.VITE_API_URL || 'https://pranto-backend-1.onrender.com/api';
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    let intervalId = null;
+
+    const fetchUserData = async (isSilent = false) => {
       if (!session?.access_token) return;
       try {
-        setLoadingData(true);
+        if (!isSilent) setLoadingData(true);
 
         // 1. Fetch Orders
         const ordersRes = await fetch(`${API_URL}/orders/my-orders`, {
@@ -46,23 +48,31 @@ export const Profile = () => {
         }
 
         // 2. Fetch Addresses
-        const addrRes = await fetch(`${API_URL}/user/addresses`, {
-          headers: { Authorization: `Bearer ${session.access_token}` },
-        });
-        const addrJson = await addrRes.json();
-        if (addrJson.success && Array.isArray(addrJson.data)) {
-          setAddresses(addrJson.data);
+        if (!isSilent) {
+          const addrRes = await fetch(`${API_URL}/user/addresses`, {
+            headers: { Authorization: `Bearer ${session.access_token}` },
+          });
+          const addrJson = await addrRes.json();
+          if (addrJson.success && Array.isArray(addrJson.data)) {
+            setAddresses(addrJson.data);
+          }
         }
       } catch (err) {
         console.warn('Error fetching user account details:', err.message);
       } finally {
-        setLoadingData(false);
+        if (!isSilent) setLoadingData(false);
       }
     };
 
     if (user && session?.access_token) {
-      fetchUserData();
+      fetchUserData(false);
+      // Poll every 5 seconds for instant real-time Admin status updates
+      intervalId = setInterval(() => fetchUserData(true), 5000);
     }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
   }, [user, session, API_URL]);
 
   if (loading) {
@@ -293,6 +303,11 @@ export const Profile = () => {
                                 </div>
                               )}
                               <span className="font-medium text-slate-800 line-clamp-1">{item.product_name || item.name}</span>
+                              {(item.selected_color || item.selectedColor) && (
+                                <span className="px-1.5 py-0.5 text-[10px] font-bold bg-blue-50 text-blue-700 rounded border border-blue-200 capitalize">
+                                  {item.selected_color || item.selectedColor}
+                                </span>
+                              )}
                               <span className="text-slate-400">×{item.quantity}</span>
                             </div>
                             <span className="font-bold text-slate-700 shrink-0">

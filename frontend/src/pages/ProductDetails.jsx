@@ -59,6 +59,9 @@ export const ProductDetails = () => {
 
   const categoryObj = categories.find((c) => c.slug === product.category);
 
+  const productColors = Array.isArray(product?.colors) && product.colors.length > 0 ? product.colors : [];
+  const [selectedColor, setSelectedColor] = useState(() => (productColors[0] || ''));
+
   const handleDecrease = () => {
     setQuantity((prev) => Math.max(1, prev - 1));
   };
@@ -68,7 +71,7 @@ export const ProductDetails = () => {
   };
 
   const handleAddToCart = () => {
-    addToCart(product, quantity);
+    addToCart(product, quantity, selectedColor);
   };
 
   const handleBuyNow = () => {
@@ -83,6 +86,7 @@ export const ProductDetails = () => {
       image: product.images?.[0] || '',
       stock: product.stock,
       quantity: quantity,
+      selectedColor: selectedColor,
     };
     navigate('/checkout', { state: { directBuyItem: directItem } });
   };
@@ -192,8 +196,34 @@ export const ProductDetails = () => {
             </p>
           </div>
 
-          {/* Action Area: Quantity & Buttons */}
+          {/* Action Area: Color, Quantity & Buttons */}
           <div className="border-t border-b border-slate-200 py-6 space-y-4">
+            {/* Color Selection (if product has available colors) */}
+            {productColors.length > 0 && (
+              <div className="space-y-2 pb-2 border-b border-slate-100">
+                <label className="text-sm font-semibold text-slate-800 flex items-center justify-between">
+                  <span>Select Color:</span>
+                  <span className="text-xs text-blue-600 font-bold capitalize">{selectedColor || 'Choose a color'}</span>
+                </label>
+                <div className="flex flex-wrap items-center gap-2">
+                  {productColors.map((colorName, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setSelectedColor(colorName)}
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                        selectedColor === colorName
+                          ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-2xs ring-2 ring-blue-500/20'
+                          : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                      }`}
+                    >
+                      {colorName}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="space-y-2">
               <div className="flex items-center gap-4">
                 <label htmlFor="qty" className="text-sm font-semibold text-slate-800">
