@@ -1,0 +1,8 @@
+# Robots.txt for Gazet
+User-agent: *
+Allow: /
+Disallow: /cart
+Disallow: /checkout
+Disallow: /order-success/
+
+Sitemap: https://gazet-bd.com/sitemap.xml

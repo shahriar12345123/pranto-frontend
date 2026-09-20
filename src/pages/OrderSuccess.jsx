@@ -1,29 +1,83 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { CheckCircle, Truck, ShoppingBag, ArrowRight, ShieldCheck, PhoneCall } from 'lucide-react';
+import React, { useMemo } from 'react';
+import { useParams, useSearchParams, Link } from 'react-router-dom';
+import { CheckCircle, ShoppingBag, PhoneCall, ShieldAlert, AlertTriangle } from 'lucide-react';
 import { Button } from '../components/common/Button';
+import { SEO } from '../components/common/SEO';
+import { validateOrderId, sanitizeId, safeSessionStorage } from '../utils/security';
 
 export const OrderSuccess = () => {
-  const { orderId } = useParams();
-  const [orderDetails, setOrderDetails] = useState(null);
+  const { orderId, id } = useParams();
+  const [searchParams] = useSearchParams();
 
-  useEffect(() => {
-    if (orderId) {
-      try {
-        const saved = sessionStorage.getItem(`order_${orderId}`);
-        if (saved) {
-          setOrderDetails(JSON.parse(saved));
-        }
-      } catch (e) {
-        console.error('Failed to parse order details from sessionStorage', e);
-      }
+  // Support route params (:orderId, :id) and query parameters (?id=, ?orderId=)
+  const rawId = orderId || id || searchParams.get('id') || searchParams.get('orderId') || '';
+
+  // Validate that the ID parameter conforms to the strict, safe order pattern
+  const isValid = Boolean(rawId && validateOrderId(rawId));
+  const safeId = sanitizeId(rawId);
+
+  // Retrieve saved order details safely from sessionStorage if the ID is valid
+  const orderDetails = useMemo(() => {
+    if (!isValid || !safeId) return null;
+    const storageKey = `order_${safeId}`;
+    const saved = safeSessionStorage.getItem(storageKey);
+    if (!saved) return null;
+
+    try {
+      return JSON.parse(saved);
+    } catch (e) {
+      console.error('Failed to parse order details from storage', e);
+      return null;
     }
-  }, [orderId]);
+  }, [isValid, safeId]);
 
   const formatPrice = (val) => new Intl.NumberFormat('en-BD').format(val || 0);
 
+  // 1. If an invalid or malicious ID parameter is supplied, render a secure error state
+  if (!isValid) {
+    return (
+      <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+        <SEO title="Invalid Order Reference" noIndex={true} />
+        <div className="bg-white border border-rose-200 rounded-3xl p-8 sm:p-10 shadow-xs">
+          <div className="w-16 h-16 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-5 ring-8 ring-rose-50/50">
+            <ShieldAlert className="w-9 h-9" />
+          </div>
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+            Invalid Order Reference
+          </h1>
+          <p className="text-sm text-slate-600 mt-2 mb-4 leading-relaxed">
+            The order ID provided is invalid, missing, or contains prohibited characters.
+            For your security, unverified or suspicious references cannot be processed.
+          </p>
+
+          <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex items-start gap-2 text-left mb-6">
+            <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+            <span>
+              If you placed an order recently, our support team will still contact you directly via phone to confirm your delivery.
+            </span>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link to="/shop" className="w-full sm:w-auto">
+              <Button variant="primary" size="md" icon={ShoppingBag} fullWidth>
+                Browse Shop
+              </Button>
+            </Link>
+            <Link to="/" className="w-full sm:w-auto">
+              <Button variant="secondary" size="md" fullWidth>
+                Back to Home
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. Legitimate, validated Order confirmation state
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+      <SEO title="Order Confirmed" noIndex={true} />
       <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-sm text-center">
         {/* Success Icon */}
         <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-5 ring-8 ring-emerald-50/50">
@@ -39,20 +93,38 @@ export const OrderSuccess = () => {
 
         {/* Order Details Card */}
         <div className="my-8 p-5 sm:p-6 rounded-2xl bg-slate-50 border border-slate-200 text-left space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200 gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200 gap-3">
             <div>
               <span className="text-xs text-slate-400 font-medium">Order Number</span>
               <p className="font-mono font-bold text-slate-900 text-base sm:text-lg">
-                #{orderId}
+                #{safeId}
               </p>
             </div>
             <div className="text-left sm:text-right">
-              <span className="text-xs text-slate-400 font-medium">Payment Method</span>
-              <p className="font-semibold text-emerald-700 text-sm">
-                Cash on Delivery (COD)
+              <span className="text-xs text-slate-400 font-medium">Payment Method & Status</span>
+              <p className="font-bold text-slate-900 text-sm">
+                {orderDetails?.paymentMethod === 'bkash' && 'bKash (Manual Payment)'}
+                {orderDetails?.paymentMethod === 'nagad' && 'Nagad (Manual Payment)'}
+                {orderDetails?.paymentMethod === 'rocket' && 'Rocket (Manual Payment)'}
+                {(!orderDetails?.paymentMethod || orderDetails?.paymentMethod === 'cod') && 'Cash on Delivery (COD)'}
               </p>
+              <div className="mt-1 flex sm:justify-end">
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+                  Pending Admin Confirmation
+                </span>
+              </div>
             </div>
           </div>
+
+          {/* If Transaction ID exists, show TrxID card */}
+          {orderDetails?.transactionId && (
+            <div className="p-3 bg-white border border-slate-200 rounded-xl flex items-center justify-between text-xs">
+              <span className="text-slate-500 font-medium">Submitted Transaction ID (TrxID):</span>
+              <span className="font-mono font-bold text-slate-900 tracking-wider bg-slate-100 px-2 py-0.5 rounded">
+                {orderDetails.transactionId}
+              </span>
+            </div>
+          )}
 
           {/* If items are stored in session, display them */}
           {orderDetails?.items && orderDetails.items.length > 0 && (
@@ -92,19 +164,37 @@ export const OrderSuccess = () => {
             </div>
           )}
 
-          {/* Total */}
-          <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
-            <span className="text-sm font-bold text-slate-900">Total Payable Amount</span>
-            <span className="text-xl sm:text-2xl font-black text-blue-600">
-              ৳{formatPrice(orderDetails?.total || 0)}
-            </span>
+          {/* Pricing Breakdown */}
+          <div className="pt-3 border-t border-slate-200 space-y-1.5 text-xs text-slate-600">
+            {orderDetails?.subtotal && (
+              <div className="flex justify-between">
+                <span>Subtotal</span>
+                <span className="font-medium text-slate-900">৳{formatPrice(orderDetails.subtotal)}</span>
+              </div>
+            )}
+            {orderDetails?.deliveryCharge !== undefined && (
+              <div className="flex justify-between">
+                <span>Delivery Charge</span>
+                <span className="font-medium text-slate-900">৳{formatPrice(orderDetails.deliveryCharge)}</span>
+              </div>
+            )}
+            <div className="pt-2 border-t border-slate-200 flex items-center justify-between">
+              <span className="text-sm font-bold text-slate-900">Total Amount</span>
+              <span className="text-xl sm:text-2xl font-black text-blue-600">
+                ৳{formatPrice(orderDetails?.total || 0)}
+              </span>
+            </div>
           </div>
         </div>
 
         {/* Confirmation Note */}
-        <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-slate-500 mb-8 bg-blue-50/60 text-blue-800 p-3.5 rounded-xl">
+        <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-slate-600 mb-8 bg-blue-50/70 text-blue-900 p-3.5 rounded-xl text-left sm:text-center">
           <PhoneCall className="w-4 h-4 text-blue-600 shrink-0" />
-          <span>Our representative will call your phone number to verify and dispatch your package.</span>
+          <span>
+            {orderDetails?.paymentMethod && orderDetails.paymentMethod !== 'cod'
+              ? 'Our verification team will review your payment transaction and contact you to confirm shipment dispatch.'
+              : 'Our representative will call your phone number to verify and dispatch your package.'}
+          </span>
         </div>
 
         {/* Action Buttons */}

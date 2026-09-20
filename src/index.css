@@ -2,12 +2,13 @@
 
 @layer base {
   html {
-    font-family: 'Inter', 'Noto Sans Bengali', system-ui, -apple-system, sans-serif;
+    font-family: 'Plus Jakarta Sans', 'Inter', 'Noto Sans Bengali', system-ui, -apple-system, sans-serif;
     scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
-/* Custom scrollbar for clean UI */
+/* Custom scrollbar for modern corporate UI */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -25,3 +26,19 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+/* Custom Utilities */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.dark-glass-panel {
+  background: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(51, 65, 85, 0.6);
+}
+

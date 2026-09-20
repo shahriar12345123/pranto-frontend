@@ -1,10 +1,16 @@
 import React from 'react';
 import { RotateCcw, ShieldAlert, CheckCircle2, RefreshCw } from 'lucide-react';
 import { Breadcrumb } from '../components/common/Breadcrumb';
+import { SEO } from '../components/common/SEO';
 
 export const ReturnPolicy = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <SEO
+        title="Return & Replacement Policy"
+        description="Review Gazet's 7-day hassle-free replacement warranty, return procedure, defect inspection criteria, and refund terms in Bangladesh."
+        keywords="gazet return policy, gadget replacement warranty bd, return defective electronics bangladesh"
+      />
       <Breadcrumb items={[{ label: 'Return & Refund Policy' }]} />
 
       <div className="mt-2 mb-10">

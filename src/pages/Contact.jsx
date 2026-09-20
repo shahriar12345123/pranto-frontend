@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MapPin, Phone, Mail, Clock, Send, MessageSquare } from 'lucide-react';
 import { Breadcrumb } from '../components/common/Breadcrumb';
+import { SEO } from '../components/common/SEO';
 import { Input } from '../components/common/Input';
 import { Button } from '../components/common/Button';
 import { siteConfig } from '../data/site';
@@ -47,8 +48,30 @@ export const Contact = () => {
     }, 500);
   };
 
+  const contactSchema = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "mainEntity": {
+      "@type": "Organization",
+      "name": "Gazet",
+      "telephone": siteConfig.phone || "+880 1700-000000",
+      "email": siteConfig.email || "support@gazet-bd.com",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Dhaka",
+        "addressCountry": "BD"
+      }
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <SEO
+        title="Contact Us"
+        description="Get in touch with the Gazet customer support team. Reach us for product inquiries, order tracking, and warranty support in Bangladesh."
+        keywords="contact gazet, customer support gazet, gadget shop contact dhaka"
+        schema={contactSchema}
+      />
       <Breadcrumb items={[{ label: 'Contact Us' }]} />
 
       <div className="mt-2 mb-10 text-center max-w-2xl mx-auto">

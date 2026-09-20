@@ -1,30 +1,57 @@
 import React, { useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Breadcrumb } from '../components/common/Breadcrumb';
+import { SEO } from '../components/common/SEO';
 import { ProductGrid } from '../components/product/ProductGrid';
 import { SearchBar } from '../components/layout/SearchBar';
-import { products } from '../data/products';
+import { useProducts } from '../context/ProductContext';
 
 export const Search = () => {
+  const { products } = useProducts();
   const [searchParams] = useSearchParams();
-  const query = searchParams.get('q') || '';
+  const rawQuery = searchParams.get('q') || searchParams.get('id') || '';
+  // Sanitize query by trimming and limiting length to prevent DOS / payload attacks
+  const query = rawQuery.replace(/[\x00-\x1F\x7F]/g, '').trim().slice(0, 100);
 
   const searchResults = useMemo(() => {
-    if (!query.trim()) return [];
+    if (!query) return [];
 
-    const lower = query.toLowerCase().trim();
+    const rawLower = query.toLowerCase().trim();
+    const tokens = rawLower.split(/\s+/).filter(Boolean);
+
     return products.filter((p) => {
-      const matchName = p.name?.toLowerCase().includes(lower);
-      const matchBrand = p.brand?.toLowerCase().includes(lower);
-      const matchCategory = p.category?.toLowerCase().includes(lower);
-      const matchDesc = p.description?.toLowerCase().includes(lower);
-      const matchSku = p.sku?.toLowerCase().includes(lower);
-      return matchName || matchBrand || matchCategory || matchDesc || matchSku;
+      const fieldList = [
+        p.name,
+        p.brand,
+        p.category,
+        p.description,
+        p.shortDescription,
+        p.sku,
+        p.slug,
+        Array.isArray(p.tags) ? p.tags.join(' ') : p.tags,
+        Array.isArray(p.features) ? p.features.join(' ') : p.features,
+      ].filter(Boolean);
+
+      const combinedText = fieldList.join(' ').toLowerCase();
+      const combinedTextNoSpaces = combinedText.replace(/[\s\-_]+/g, '');
+
+      return tokens.every((token) => {
+        const tokenNoSpaces = token.replace(/[\s\-_]+/g, '');
+        return (
+          combinedText.includes(token) ||
+          (tokenNoSpaces.length > 2 && combinedTextNoSpaces.includes(tokenNoSpaces))
+        );
+      });
     });
-  }, [query]);
+  }, [products, query]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <SEO
+        title={query ? `Search Results for "${query}"` : 'Search Gadgets'}
+        description={`Search results for ${query || 'gadgets'} on Gazet Bangladesh.`}
+        noIndex={true}
+      />
       <Breadcrumb
         items={[
           { label: 'Search Results' },

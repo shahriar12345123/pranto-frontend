@@ -30,9 +30,9 @@ export const Button = ({
   };
 
   const sizeStyles = {
-    sm: 'min-h-[36px] px-3.5 py-1.5 text-xs rounded-lg gap-1.5',
-    md: 'min-h-[44px] px-5 py-2.5 text-sm rounded-lg gap-2',
-    lg: 'min-h-[50px] px-7 py-3 text-base rounded-xl gap-2.5 font-semibold',
+    sm: 'min-h-[36px] px-3 py-1.5 text-xs rounded-lg gap-1.5',
+    md: 'min-h-[44px] px-4 sm:px-5 py-2.5 text-sm rounded-lg gap-2',
+    lg: 'min-h-[46px] sm:min-h-[50px] px-3.5 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl gap-2 font-semibold',
   };
 
   return (

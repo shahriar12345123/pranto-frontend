@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   ShoppingBag,
   Zap,
@@ -12,28 +12,33 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { Breadcrumb } from '../components/common/Breadcrumb';
+import { SEO } from '../components/common/SEO';
 import { ProductGallery } from '../components/product/ProductGallery';
 import { ProductPrice } from '../components/product/ProductPrice';
-import { ProductRating } from '../components/product/ProductRating';
 import { ProductSpecsTable } from '../components/product/ProductSpecsTable';
 import { RelatedProducts } from '../components/product/RelatedProducts';
 import { Button } from '../components/common/Button';
 import { EmptyState } from '../components/common/EmptyState';
 import { useCart } from '../context/CartContext';
-import { products } from '../data/products';
+import { useProducts } from '../context/ProductContext';
 import { categories } from '../data/categories';
+import { sanitizeId } from '../utils/security';
 
 export const ProductDetails = () => {
-  const { slug } = useParams();
+  const { products, getProduct, loading: productsLoading } = useProducts();
+  const { slug, id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
 
-  const product = products.find((p) => p.slug === slug);
+  // Safely sanitize the parameter before looking up product
+  const safeIdentifier = sanitizeId(slug || id || '');
+  const product = safeIdentifier ? getProduct(safeIdentifier) : null;
 
-  if (!product) {
+  if (!product && !productsLoading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <SEO title="Product Not Found" noIndex={true} />
         <EmptyState
           title="Product Not Found"
           description="The gadget you are looking for might have been discontinued or does not exist."
@@ -44,7 +49,18 @@ export const ProductDetails = () => {
     );
   }
 
+  if (!product && productsLoading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 flex justify-center items-center">
+        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   const categoryObj = categories.find((c) => c.slug === product.category);
+
+  const productColors = Array.isArray(product?.colors) && product.colors.length > 0 ? product.colors : ['Black', 'White'];
+  const [selectedColor, setSelectedColor] = useState(() => (productColors[0] || 'Black'));
 
   const handleDecrease = () => {
     setQuantity((prev) => Math.max(1, prev - 1));
@@ -55,18 +71,63 @@ export const ProductDetails = () => {
   };
 
   const handleAddToCart = () => {
-    addToCart(product, quantity);
+    addToCart(product, quantity, selectedColor);
   };
 
   const handleBuyNow = () => {
-    addToCart(product, quantity, false);
-    navigate('/checkout');
+    const directItem = {
+      id: product.id,
+      name: product.name,
+      slug: product.slug,
+      sku: product.sku,
+      brand: product.brand,
+      price: product.price,
+      comparePrice: product.comparePrice,
+      image: product.images?.[0] || '',
+      stock: product.stock,
+      quantity: quantity,
+      selectedColor: selectedColor,
+    };
+    navigate('/checkout', { state: { directBuyItem: directItem } });
   };
 
   const formatPrice = (val) => new Intl.NumberFormat('en-BD').format(val);
 
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.name,
+    "image": product.images,
+    "description": product.shortDescription || product.description,
+    "sku": product.sku,
+    "brand": {
+      "@type": "Brand",
+      "name": product.brand
+    },
+    "offers": {
+      "@type": "Offer",
+      "url": `https://gazet-bd.com/product/${product.slug}`,
+      "priceCurrency": "BDT",
+      "price": product.price,
+      "priceValidUntil": "2027-12-31",
+      "itemCondition": "https://schema.org/NewCondition",
+      "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      "seller": {
+        "@type": "Organization",
+        "name": "Gazet"
+      }
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <SEO
+        title={`${product.name} - Price in Bangladesh`}
+        description={`Buy ${product.name} (${product.brand}) online at best price in Bangladesh (৳${formatPrice(product.price)}). 100% genuine with official warranty and fast Cash on Delivery.`}
+        image={product.images?.[0]}
+        keywords={`${product.name} price in bd, buy ${product.name}, ${product.brand} bd`}
+        schema={productSchema}
+      />
       {/* Breadcrumb */}
       <Breadcrumb
         items={[
@@ -80,14 +141,14 @@ export const ProductDetails = () => {
       />
 
       {/* Main Product Info Section */}
-      <div className="mt-4 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 lg:gap-12 items-start">
         {/* Left: Product Gallery */}
-        <div className="lg:col-span-6">
+        <div className="md:col-span-6">
           <ProductGallery images={product.images} productName={product.name} />
         </div>
 
         {/* Right: Purchase and Specs Column */}
-        <div className="lg:col-span-6 flex flex-col gap-6">
+        <div className="md:col-span-6 flex flex-col gap-6">
           <div className="space-y-3">
             {/* Brand & SKU */}
             <div className="flex items-center justify-between text-xs text-slate-500">
@@ -103,15 +164,6 @@ export const ProductDetails = () => {
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug">
               {product.name}
             </h1>
-
-            {/* Rating & Reviews */}
-            <div className="flex items-center gap-3">
-              <ProductRating rating={product.rating} reviewCount={product.reviewCount} size="md" />
-              <span className="text-slate-300">|</span>
-              <span className="text-xs sm:text-sm text-slate-500">
-                {product.reviewCount} customer reviews
-              </span>
-            </div>
 
             {/* Price section */}
             <div className="pt-2">
@@ -144,8 +196,34 @@ export const ProductDetails = () => {
             </p>
           </div>
 
-          {/* Action Area: Quantity & Buttons */}
+          {/* Action Area: Color, Quantity & Buttons */}
           <div className="border-t border-b border-slate-200 py-6 space-y-4">
+            {/* Color Selection (if product has available colors) */}
+            {productColors.length > 0 && (
+              <div className="space-y-2 pb-2 border-b border-slate-100">
+                <label className="text-sm font-semibold text-slate-800 flex items-center justify-between">
+                  <span>Select Color:</span>
+                  <span className="text-xs text-blue-600 font-bold capitalize">{selectedColor || 'Choose a color'}</span>
+                </label>
+                <div className="flex flex-wrap items-center gap-2">
+                  {productColors.map((colorName, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setSelectedColor(colorName)}
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                        selectedColor === colorName
+                          ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-2xs ring-2 ring-blue-500/20'
+                          : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                      }`}
+                    >
+                      {colorName}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="space-y-2">
               <div className="flex items-center gap-4">
                 <label htmlFor="qty" className="text-sm font-semibold text-slate-800">
@@ -273,11 +351,11 @@ export const ProductDetails = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
                 <h3 className="font-bold text-slate-900 mb-1">Inside Dhaka</h3>
-                <p>Delivery in 24 to 48 Hours. Charge: ৳60 (Cash on delivery)</p>
+                <p>Delivery in 24 to 48 Hours. Charge: ৳70 (Cash on delivery)</p>
               </div>
               <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
                 <h3 className="font-bold text-slate-900 mb-1">Outside Dhaka (All 64 Districts)</h3>
-                <p>Delivery in 2 to 4 Business Days. Charge: ৳120 (Cash on delivery)</p>
+                <p>Delivery in 2 to 4 Business Days. Charge: ৳130 (Cash on delivery)</p>
               </div>
             </div>
             <p className="text-xs text-slate-500">

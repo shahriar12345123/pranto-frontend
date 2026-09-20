@@ -1,9 +1,15 @@
 import React from 'react';
 import { Breadcrumb } from '../components/common/Breadcrumb';
+import { SEO } from '../components/common/SEO';
 
 export const Terms = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <SEO
+        title="Terms & Conditions"
+        description="Read Gazet's terms and conditions, purchasing rules, warranty guidelines, and Cash on Delivery agreements in Bangladesh."
+        keywords="gazet terms and conditions, e-commerce terms bangladesh"
+      />
       <Breadcrumb items={[{ label: 'Terms & Conditions' }]} />
 
       <div className="mt-2 mb-10">

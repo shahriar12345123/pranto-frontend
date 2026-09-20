@@ -1,11 +1,17 @@
 import React from 'react';
 import { ShieldCheck, Truck, Headphones, Sparkles, Award, Users } from 'lucide-react';
 import { Breadcrumb } from '../components/common/Breadcrumb';
+import { SEO } from '../components/common/SEO';
 import { siteConfig } from '../data/site';
 
 export const About = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <SEO
+        title="About Us"
+        description="Learn about Gazet - Bangladesh's leading modern gadget store committed to bringing 100% genuine tech products, smart accessories, and trustworthy customer service."
+        keywords="about gazet, gadget shop bd, online tech store dhaka"
+      />
       <Breadcrumb items={[{ label: 'About Us' }]} />
 
       {/* Hero Section */}
@@ -56,7 +62,7 @@ export const About = () => {
 
       {/* Stats/Highlight Banner */}
       <div className="rounded-3xl bg-slate-900 text-white p-8 sm:p-12 mb-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
           <div>
             <p className="text-3xl sm:text-4xl font-black text-blue-400">100%</p>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">Authentic Products</p>
@@ -64,10 +70,6 @@ export const About = () => {
           <div>
             <p className="text-3xl sm:text-4xl font-black text-emerald-400">64</p>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">Districts Covered</p>
-          </div>
-          <div>
-            <p className="text-3xl sm:text-4xl font-black text-amber-400">7 Days</p>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1">Replacement Warranty</p>
           </div>
           <div>
             <p className="text-3xl sm:text-4xl font-black text-purple-400">COD</p>

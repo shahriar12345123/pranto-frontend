@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDown, HelpCircle } from 'lucide-react';
 import { Breadcrumb } from '../components/common/Breadcrumb';
+import { SEO } from '../components/common/SEO';
 
 export const FAQ = () => {
   const faqs = [
@@ -42,8 +43,27 @@ export const FAQ = () => {
     setOpenIndex((prev) => (prev === index ? null : index));
   };
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map((faq) => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <SEO
+        title="Frequently Asked Questions (FAQ)"
+        description="Find answers to common questions about Cash on Delivery, delivery timelines across Bangladesh, product warranty, and return policies at Gazet."
+        keywords="gazet faq, cash on delivery bangladesh faq, gadget delivery time dhaka"
+        schema={faqSchema}
+      />
       <Breadcrumb items={[{ label: 'FAQ' }]} />
 
       <div className="mt-2 mb-10 text-center max-w-2xl mx-auto">

@@ -1,9 +1,15 @@
 import React from 'react';
 import { Breadcrumb } from '../components/common/Breadcrumb';
+import { SEO } from '../components/common/SEO';
 
 export const PrivacyPolicy = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <SEO
+        title="Privacy Policy"
+        description="Learn how Gazet collects, protects, and responsibly manages customer data and delivery information in Bangladesh."
+        keywords="gazet privacy policy, customer data protection bangladesh"
+      />
       <Breadcrumb items={[{ label: 'Privacy Policy' }]} />
 
       <div className="mt-2 mb-10">

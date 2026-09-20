@@ -1,14 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, ArrowRight, ShieldCheck, Truck, RotateCcw, CreditCard } from 'lucide-react';
+import { Phone, Mail, MapPin, ArrowRight, ShieldCheck, Truck, CreditCard } from 'lucide-react';
 import { siteConfig } from '../../data/site';
+import logo from '../../assets/logo.png';
 
 export const Footer = () => {
   return (
     <footer className="bg-slate-900 text-slate-300 pt-16 pb-12 border-t border-slate-800">
       {/* Value props ribbon */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 border-b border-slate-800/80">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-600/20 text-blue-400 flex items-center justify-center shrink-0">
               <Truck className="w-5 h-5" />
@@ -25,15 +26,6 @@ export const Footer = () => {
             <div>
               <h5 className="text-white text-sm font-semibold">100% Genuine</h5>
               <p className="text-xs text-slate-400">Authentic gadgets & warranty</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-600/20 text-purple-400 flex items-center justify-center shrink-0">
-              <RotateCcw className="w-5 h-5" />
-            </div>
-            <div>
-              <h5 className="text-white text-sm font-semibold">7 Days Return</h5>
-              <p className="text-xs text-slate-400">Hassle-free replacement policy</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -54,15 +46,10 @@ export const Footer = () => {
           {/* Column 1: Store info */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
-                G
-              </div>
-              <span className="text-xl font-extrabold tracking-tight text-white">
-                Gazet<span className="text-blue-500">.</span>
-              </span>
+              <img src={logo} alt="Gazet Logo" className="h-12 w-auto filter brightness-0 invert" />
             </Link>
             <p className="text-sm text-slate-400 leading-relaxed">
-              Your trusted destination for smart gadgets, mobile essentials, and everyday technology accessories in Bangladesh.
+              Your trusted destination for genuine TWS & Active Noise Cancelling Wireless Earbuds in Bangladesh.
             </p>
             <div className="pt-2">
               <span className="inline-block px-3 py-1 text-xs font-semibold rounded-md bg-slate-800 text-emerald-400 border border-slate-700">
@@ -84,12 +71,7 @@ export const Footer = () => {
               </li>
               <li>
                 <Link to="/shop" className="hover:text-blue-400 transition-colors">
-                  All Products
-                </Link>
-              </li>
-              <li>
-                <Link to="/categories" className="hover:text-blue-400 transition-colors">
-                  Categories
+                  Shop Earbuds
                 </Link>
               </li>
               <li>

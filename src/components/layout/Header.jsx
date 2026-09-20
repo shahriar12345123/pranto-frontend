@@ -1,23 +1,54 @@
-import React, { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
-import { Menu, ShoppingBag, Search, Phone, ShieldCheck, X } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Menu, ShoppingBag, Search, Phone, ShieldCheck, X, User, LogOut, ChevronDown } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { SearchBar } from './SearchBar';
 import { MobileMenu } from './MobileMenu';
 import { siteConfig } from '../../data/site';
+import logo from '../../assets/logo.png';
 
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
   const { getCartItemCount } = useCart();
+  const { user, signOut } = useAuth();
+  const { addToast } = useToast();
+  const navigate = useNavigate();
   const itemCount = getCartItemCount();
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setUserDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSignOut = async () => {
+    setUserDropdownOpen(false);
+    const { error } = await signOut();
+    if (error) {
+      addToast('Failed to sign out', 'error');
+    } else {
+      addToast('Signed out successfully', 'success');
+      navigate('/');
+    }
+  };
+
+  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Account';
 
   const mainNav = [
     { to: '/', label: 'Home' },
-    { to: '/shop', label: 'Shop' },
-    { to: '/categories', label: 'Categories' },
-    { to: '/shop?onSale=true', label: 'Deals' },
-    { to: '/about', label: 'About' },
+    { to: '/shop', label: 'Shop Earbuds' },
+    { to: '/about', label: 'About Us' },
     { to: '/contact', label: 'Contact' },
   ];
 
@@ -66,17 +97,7 @@ export const Header = () => {
               </button>
 
               <Link to="/" className="flex items-center gap-2 shrink-0 group">
-                <div className="w-9 h-9 rounded-xl bg-blue-600 group-hover:bg-blue-700 text-white flex items-center justify-center font-extrabold text-xl shadow-sm transition-all duration-200 group-hover:scale-105">
-                  G
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 leading-none">
-                    Gazet<span className="text-blue-600">.</span>
-                  </span>
-                  <span className="text-[10px] font-semibold text-slate-400 tracking-wider uppercase hidden sm:block">
-                    Smart Gadgets
-                  </span>
-                </div>
+                <img src={logo} alt="Gazet Logo" className="h-14 w-auto" />
               </Link>
             </div>
 
@@ -85,7 +106,7 @@ export const Header = () => {
               <SearchBar />
             </div>
 
-            {/* Right: Actions (Mobile Search toggle, Cart) */}
+            {/* Right: Actions (Auth, Mobile Search toggle, Cart) */}
             <div className="flex items-center gap-2 sm:gap-3">
               {/* Mobile search button */}
               <button
@@ -96,6 +117,71 @@ export const Header = () => {
               >
                 {mobileSearchOpen ? <X className="w-5 h-5" /> : <Search className="w-5 h-5" />}
               </button>
+
+              {/* User Account / Sign In */}
+              {user ? (
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    type="button"
+                    onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                    className="flex items-center gap-2 p-1.5 sm:px-3 sm:py-2 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 hover:border-slate-300 transition-all duration-150 text-slate-700 shadow-xs"
+                    aria-expanded={userDropdownOpen}
+                  >
+                    <div className="w-6 h-6 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs">
+                      {userName.charAt(0).toUpperCase()}
+                    </div>
+                    <span className="hidden md:inline text-xs font-semibold max-w-[100px] truncate">
+                      {userName}
+                    </span>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden sm:block" />
+                  </button>
+
+                  {userDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50 animate-in fade-in zoom-in-95">
+                      <div className="px-4 py-2.5 border-b border-slate-100">
+                        <p className="text-xs font-semibold text-slate-900 truncate">{userName}</p>
+                        <p className="text-[11px] text-slate-500 truncate">{user.email}</p>
+                      </div>
+                      <div className="py-1">
+                        <Link
+                          to="/profile"
+                          onClick={() => setUserDropdownOpen(false)}
+                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors"
+                        >
+                          <User className="w-4 h-4 text-slate-400" />
+                          My Account Profile
+                        </Link>
+                      </div>
+                      <div className="border-t border-slate-100 pt-1">
+                        <button
+                          type="button"
+                          onClick={handleSignOut}
+                          className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-red-600 hover:bg-red-50 transition-colors text-left"
+                        >
+                          <LogOut className="w-4 h-4 text-red-500" />
+                          Sign Out
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Link
+                    to="/signin"
+                    className="flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors"
+                  >
+                    <User className="w-4 h-4 text-slate-600" />
+                    <span className="hidden sm:inline">Sign In</span>
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="hidden sm:inline-flex items-center px-3 py-2 rounded-xl text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 shadow-xs transition-colors"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              )}
 
               {/* Cart Button */}
               <Link

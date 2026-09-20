@@ -1,17 +1,35 @@
 import React from 'react';
-import { NavLink, Link } from 'react-router-dom';
-import { X, Sparkles, ChevronRight, Phone, Mail, MapPin } from 'lucide-react';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
+import { X, Sparkles, ChevronRight, Phone, Mail, User, LogOut, LogIn, UserPlus } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { siteConfig } from '../../data/site';
 import { categories } from '../../data/categories';
+import logo from '../../assets/logo.png';
 
 export const MobileMenu = ({ isOpen, onClose }) => {
+  const { user, signOut } = useAuth();
+  const { addToast } = useToast();
+  const navigate = useNavigate();
+
   if (!isOpen) return null;
+
+  const handleSignOut = async () => {
+    onClose();
+    const { error } = await signOut();
+    if (error) {
+      addToast('Failed to sign out', 'error');
+    } else {
+      addToast('Signed out successfully', 'success');
+      navigate('/');
+    }
+  };
+
+  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'My Account';
 
   const navLinks = [
     { to: '/', label: 'Home' },
-    { to: '/shop', label: 'Shop All' },
-    { to: '/categories', label: 'Categories' },
-    { to: '/shop?onSale=true', label: 'Deals & Offers', badge: 'Sale' },
+    { to: '/shop', label: 'Shop Earbuds' },
     { to: '/about', label: 'About Us' },
     { to: '/contact', label: 'Contact Support' },
     { to: '/faq', label: 'FAQ' },
@@ -32,12 +50,7 @@ export const MobileMenu = ({ isOpen, onClose }) => {
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-slate-100">
             <Link to="/" onClick={onClose} className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
-                G
-              </div>
-              <span className="text-xl font-extrabold tracking-tight text-slate-900">
-                Gazet<span className="text-blue-600">.</span>
-              </span>
+              <img src={logo} alt="Gazet Logo" className="h-12 w-auto" />
             </Link>
             <button
               onClick={onClose}
@@ -46,6 +59,51 @@ export const MobileMenu = ({ isOpen, onClose }) => {
             >
               <X className="w-5 h-5" />
             </button>
+          </div>
+
+          {/* User Account Section */}
+          <div className="p-3 bg-slate-50 border-b border-slate-100">
+            {user ? (
+              <div className="space-y-2">
+                <Link
+                  to="/profile"
+                  onClick={onClose}
+                  className="flex items-center gap-3 p-2 bg-white rounded-xl border border-slate-200/80 shadow-xs"
+                >
+                  <div className="w-9 h-9 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-sm">
+                    {userName.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold text-slate-900 truncate">{userName}</p>
+                    <p className="text-[11px] text-slate-500 truncate">{user.email}</p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-slate-400" />
+                </Link>
+                <button
+                  onClick={handleSignOut}
+                  className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 text-xs font-semibold text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                >
+                  <LogOut className="w-3.5 h-3.5" /> Sign Out
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                <Link
+                  to="/signin"
+                  onClick={onClose}
+                  className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-xs"
+                >
+                  <LogIn className="w-3.5 h-3.5 text-blue-600" /> Sign In
+                </Link>
+                <Link
+                  to="/signup"
+                  onClick={onClose}
+                  className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 transition-colors shadow-xs"
+                >
+                  <UserPlus className="w-3.5 h-3.5" /> Sign Up
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Navigation items */}
@@ -76,16 +134,16 @@ export const MobileMenu = ({ isOpen, onClose }) => {
             ))}
           </nav>
 
-          {/* Popular Categories list */}
+          {/* Earbud Collections list */}
           <div className="px-4 py-3 border-t border-slate-100">
             <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-              Top Categories
+              Earbud Collections
             </h4>
             <div className="grid grid-cols-2 gap-2">
               {categories.slice(0, 6).map((cat) => (
                 <Link
                   key={cat.id}
-                  to={`/category/${cat.slug}`}
+                  to={`/shop?category=${cat.slug}`}
                   onClick={onClose}
                   className="text-xs text-slate-600 hover:text-blue-600 py-1.5 px-2 rounded-lg bg-slate-50 hover:bg-blue-50/50 truncate block"
                 >
@@ -111,3 +169,4 @@ export const MobileMenu = ({ isOpen, onClose }) => {
     </div>
   );
 };
+

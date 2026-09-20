@@ -9,7 +9,7 @@ export const CategoryCard = ({ category, variant = 'default' }) => {
 
   return (
     <Link
-      to={`/category/${category.slug}`}
+      to={`/shop?category=${category.slug}`}
       className="group relative bg-white border border-slate-200/90 hover:border-blue-500/40 rounded-2xl p-4 sm:p-5 flex flex-col justify-between overflow-hidden shadow-xs hover:shadow-md transition-all duration-200 hover:-translate-y-0.5"
     >
       <div className="flex flex-col items-center text-center">

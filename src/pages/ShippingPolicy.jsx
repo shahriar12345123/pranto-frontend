@@ -1,10 +1,16 @@
 import React from 'react';
 import { Truck, Clock, ShieldCheck, MapPin } from 'lucide-react';
 import { Breadcrumb } from '../components/common/Breadcrumb';
+import { SEO } from '../components/common/SEO';
 
 export const ShippingPolicy = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <SEO
+        title="Shipping & Delivery Policy"
+        description="Learn about Gazet's delivery charges (৳70 in Dhaka, ৳130 nationwide), shipping timelines (24-48h inside Dhaka), and courier partners across Bangladesh."
+        keywords="shipping policy bangladesh, delivery charge gazet, cash on delivery shipping time bd"
+      />
       <Breadcrumb items={[{ label: 'Shipping Policy' }]} />
 
       <div className="mt-2 mb-10">
@@ -50,11 +56,11 @@ export const ShippingPolicy = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
             <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
               <span className="font-bold text-slate-900 block">Inside Dhaka</span>
-              <span className="text-blue-600 font-extrabold text-base">৳60</span>
+              <span className="text-blue-600 font-extrabold text-base">৳70</span>
             </div>
             <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
               <span className="font-bold text-slate-900 block">Outside Dhaka (All 64 Districts)</span>
-              <span className="text-blue-600 font-extrabold text-base">৳120</span>
+              <span className="text-blue-600 font-extrabold text-base">৳130</span>
             </div>
           </div>
         </section>
