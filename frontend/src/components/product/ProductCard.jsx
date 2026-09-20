@@ -70,6 +70,7 @@ export const ProductCard = ({ product }) => {
             src={mainImage}
             alt={product.name}
             loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-300 ease-out"
           />
         </div>

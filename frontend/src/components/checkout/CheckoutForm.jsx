@@ -32,6 +32,7 @@ export const CheckoutForm = ({ items = [], deliveryCharge = 70, onDivisionChange
     orderNotes: '',
     paymentMethod: 'cod',
     transactionId: '',
+    codPaymentService: '',
   });
 
   const [copiedNumber, setCopiedNumber] = useState(false);
@@ -123,6 +124,11 @@ export const CheckoutForm = ({ items = [], deliveryCharge = 70, onDivisionChange
       newErrors.address = 'Please enter your full delivery address';
     }
 
+    // Payment Service Selector Validation for COD
+    if (formData.paymentMethod === 'cod' && !formData.codPaymentService) {
+      newErrors.codPaymentService = 'Please select which service (bKash, Nagad, or Rocket) you used to pay the delivery charge';
+    }
+
     // Transaction ID Validation for all orders (including COD advance delivery charge)
     const trimmedTxn = formData.transactionId.trim();
     if (!trimmedTxn) {
@@ -171,6 +177,7 @@ export const CheckoutForm = ({ items = [], deliveryCharge = 70, onDivisionChange
         })),
         paymentMethod: formData.paymentMethod,
         transactionId: cleanTxnId,
+        deliveryPaymentService: formData.paymentMethod === 'cod' ? formData.codPaymentService : null,
       };
 
       const headers = {
@@ -624,8 +631,36 @@ export const CheckoutForm = ({ items = [], deliveryCharge = 70, onDivisionChange
             <div className="space-y-1 text-xs text-slate-600 bg-slate-100/80 p-3 rounded-xl">
               <p className="font-bold text-slate-800 mb-0.5">Instructions:</p>
               <p>1. Send <strong>৳{formatPrice(deliveryCharge)}</strong> via <strong>Send Money</strong> to any of the numbers above.</p>
-              <p>2. Copy the <strong>Transaction ID (Txn ID)</strong> from your SMS / App and paste it below.</p>
-              <p>3. Your order will be placed as <strong>Pending</strong> and confirmed by our Admin team.</p>
+              <p>2. Select the service used below (bKash, Nagad, or Rocket).</p>
+              <p>3. Copy the <strong>Transaction ID (Txn ID)</strong> from your SMS / App and paste it below.</p>
+              <p>4. Your order will be placed as <strong>Pending</strong> and confirmed by our Admin team.</p>
+            </div>
+
+            {/* Payment Service Selection Dropdown */}
+            <div className="pt-1">
+              <label htmlFor="codPaymentService" className="block text-sm font-bold text-slate-900 mb-1.5">
+                Payment Service Used <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="codPaymentService"
+                name="codPaymentService"
+                value={formData.codPaymentService}
+                onChange={handleChange}
+                className={`w-full p-3 rounded-lg border text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-colors ${
+                  errors.codPaymentService ? 'border-red-500' : 'border-slate-300'
+                }`}
+              >
+                <option value="">-- Select Service (bKash / Nagad / Rocket) --</option>
+                <option value="bkash">bKash Personal</option>
+                <option value="nagad">Nagad Personal</option>
+                <option value="rocket">Rocket Personal</option>
+              </select>
+              {errors.codPaymentService && (
+                <p className="text-xs text-red-600 font-medium mt-1 flex items-center gap-1">
+                  <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                  <span>{errors.codPaymentService}</span>
+                </p>
+              )}
             </div>
 
             {/* Transaction ID Input */}
