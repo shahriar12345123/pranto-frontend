@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ShoppingBag } from 'lucide-react';
 import { Breadcrumb } from '../components/common/Breadcrumb';
 import { SEO } from '../components/common/SEO';
@@ -7,12 +7,37 @@ import { CheckoutForm } from '../components/checkout/CheckoutForm';
 import { CheckoutSummary } from '../components/checkout/CheckoutSummary';
 import { EmptyState } from '../components/common/EmptyState';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { siteConfig } from '../data/site';
 
 export const Checkout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { cartItems } = useCart();
+  const { user, loading: authLoading } = useAuth();
+  const { addToast } = useToast();
   const [selectedDivision, setSelectedDivision] = useState('Dhaka');
+
+  // Auth guard — redirect to signin if user is not logged in
+  useEffect(() => {
+    if (!authLoading && !user) {
+      addToast('Please sign in to proceed with checkout.', 'warning');
+      navigate('/signin', { state: { from: { pathname: '/checkout' }, checkoutState: location.state }, replace: true });
+    }
+  }, [user, authLoading, navigate, location.state]);
+
+  // Show loader while auth is resolving
+  if (authLoading) {
+    return (
+      <div className="min-h-[50vh] flex flex-col items-center justify-center p-8">
+        <div className="w-9 h-9 border-3 border-emerald-200 border-t-emerald-600 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  // Don't render anything while redirect is in progress
+  if (!user) return null;
 
   // Check if a specific item is being purchased directly via "Buy Now"
   const directBuyItem = useMemo(() => {
