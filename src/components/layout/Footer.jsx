@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, ArrowRight, ShieldCheck, Truck, CreditCard, Facebook } from 'lucide-react';
+import { Phone, Mail, MapPin, ArrowRight, ShieldCheck, Truck, CreditCard } from 'lucide-react';
+import { FacebookIcon } from '../common/FacebookIcon';
 import { siteConfig } from '../../data/site';
 import logo from '../../assets/logo.png';
 
@@ -58,7 +59,7 @@ export const Footer = () => {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-bold rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600 hover:text-white transition-all shadow-2xs"
               >
-                <Facebook className="w-4 h-4 fill-current" />
+                <FacebookIcon className="w-4 h-4 fill-current" />
                 <span>Visit Facebook Page</span>
               </a>
             </div>
@@ -150,7 +151,7 @@ export const Footer = () => {
                 </a>
               </li>
               <li className="flex items-center gap-3">
-                <Facebook className="w-4 h-4 text-blue-500 shrink-0" />
+                <FacebookIcon className="w-4 h-4 text-blue-500 shrink-0" />
                 <a
                   href={siteConfig.socials?.facebook || 'https://www.facebook.com/friendsgazetteshop'}
                   target="_blank"

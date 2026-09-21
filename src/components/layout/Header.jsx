@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { Menu, ShoppingBag, Search, Phone, ShieldCheck, X, User, LogOut, ChevronDown, Facebook } from 'lucide-react';
+import { Menu, ShoppingBag, Search, Phone, ShieldCheck, X, User, LogOut, ChevronDown } from 'lucide-react';
+import { FacebookIcon } from '../common/FacebookIcon';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -75,7 +76,7 @@ export const Header = () => {
                 className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 hover:text-white transition-colors text-[11px] font-semibold"
                 title="Visit our Official Facebook Page"
               >
-                <Facebook className="w-3.5 h-3.5 fill-current" />
+                <FacebookIcon className="w-3.5 h-3.5 fill-current" />
                 <span>Facebook</span>
               </a>
               <a
