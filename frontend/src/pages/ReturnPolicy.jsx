@@ -8,7 +8,7 @@ export const ReturnPolicy = () => {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
       <SEO
         title="Return & Replacement Policy"
-        description="Review Gazet's 7-day hassle-free replacement warranty, return procedure, defect inspection criteria, and refund terms in Bangladesh."
+        description="Review Gazet's hassle-free replacement warranty, return procedure, defect inspection criteria, and refund terms in Bangladesh."
         keywords="gazet return policy, gadget replacement warranty bd, return defective electronics bangladesh"
       />
       <Breadcrumb items={[{ label: 'Return & Refund Policy' }]} />
@@ -26,10 +26,10 @@ export const ReturnPolicy = () => {
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
             <RotateCcw className="w-5 h-5 text-blue-600" />
-            1. Return Eligibility (7 Days)
+            1. Return Eligibility
           </h2>
           <p>
-            Products are eligible for return or replacement within 7 calendar days of delivery if they arrive defective, physically damaged, or if the wrong item was dispatched.
+            Products are eligible for return or replacement upon delivery if they arrive defective, physically damaged, or if the wrong item was dispatched.
           </p>
         </section>
 

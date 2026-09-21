@@ -4,7 +4,7 @@ export const siteConfig = {
   description: "Discover useful gadgets and accessories designed to make your everyday life easier.",
   phone: "01611521209",
   email: "friendsshop470@gmail.com",
-  address: "Postal Code : 2240 Bhaluka / 3100 Sylhet",
+  address: "Postal Code : 2240 Bhaluka, Mymensingh",
   deliveryChargeInsideDhaka: 70,
   deliveryChargeOutsideDhaka: 130,
   paymentMethods: {

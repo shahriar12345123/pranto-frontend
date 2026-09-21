@@ -8,6 +8,13 @@ export const ProductPrice = ({ price, comparePrice, discount, size = 'md', class
   const isLarge = size === 'lg';
   const isSmall = size === 'sm';
 
+  const computedDiscount =
+    discount && discount > 0
+      ? discount
+      : comparePrice && comparePrice > price
+      ? Math.round(((comparePrice - price) / comparePrice) * 100)
+      : null;
+
   return (
     <div className={`flex items-baseline gap-2 flex-wrap ${className}`}>
       <span
@@ -28,9 +35,13 @@ export const ProductPrice = ({ price, comparePrice, discount, size = 'md', class
         </span>
       )}
 
-      {discount && discount > 0 && isLarge && (
-        <span className="px-2 py-0.5 text-xs font-bold text-red-600 bg-red-50 rounded-md border border-red-100">
-          {discount}% OFF
+      {computedDiscount && computedDiscount > 0 && (
+        <span
+          className={`font-bold text-emerald-700 bg-emerald-50 rounded-md border border-emerald-200/80 ${
+            isLarge ? 'px-2 py-0.5 text-xs' : 'px-1.5 py-0.5 text-[10px]'
+          }`}
+        >
+          {computedDiscount}% OFF
         </span>
       )}
     </div>

@@ -197,9 +197,8 @@ export const Contact = () => {
                 placeholder="How can we help you today?"
                 value={formData.message}
                 onChange={handleChange}
-                className={`w-full p-3 rounded-lg border text-sm text-slate-900 bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 ${
-                  errors.message ? 'border-red-500' : 'border-slate-200'
-                }`}
+                className={`w-full p-3 rounded-lg border text-sm text-slate-900 bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 ${errors.message ? 'border-red-500' : 'border-slate-200'
+                  }`}
               />
               {errors.message && (
                 <p className="text-xs text-red-600 font-medium">{errors.message}</p>

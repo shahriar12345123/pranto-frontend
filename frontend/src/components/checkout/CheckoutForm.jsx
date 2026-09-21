@@ -174,6 +174,7 @@ export const CheckoutForm = ({ items = [], deliveryCharge = 70, onDivisionChange
           price: Number(i.price),
           quantity: Number(i.quantity) || 1,
           image: i.image || '',
+          selectedColor: i.selectedColor || i.color || 'Black',
         })),
         paymentMethod: formData.paymentMethod,
         transactionId: cleanTxnId,

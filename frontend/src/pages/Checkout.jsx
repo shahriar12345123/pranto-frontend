@@ -84,6 +84,16 @@ export const Checkout = () => {
     );
   };
 
+  const handleColorChange = (itemId, newColor) => {
+    setLocalItems((prev) =>
+      prev.map((item) =>
+        item.id === itemId
+          ? { ...item, selectedColor: newColor, color: newColor }
+          : item
+      )
+    );
+  };
+
   // Inside Dhaka: ৳70, Outside Dhaka: ৳130
   const deliveryCharge =
     selectedDivision.toLowerCase() === 'dhaka'
@@ -151,12 +161,13 @@ export const Checkout = () => {
           />
         </div>
 
-        {/* Right: Sticky Order summary with quantity controls */}
+        {/* Right: Sticky Order summary with quantity controls & color selection */}
         <div className="lg:col-span-4 min-w-0 w-full">
           <CheckoutSummary
             items={localItems}
             deliveryCharge={deliveryCharge}
             onQuantityChange={handleQuantityChange}
+            onColorChange={handleColorChange}
           />
         </div>
       </div>

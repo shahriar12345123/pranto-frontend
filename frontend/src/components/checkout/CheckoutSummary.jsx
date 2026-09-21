@@ -1,7 +1,7 @@
 import React from 'react';
 import { ShieldCheck, Lock, Minus, Plus } from 'lucide-react';
 
-export const CheckoutSummary = ({ items = [], deliveryCharge = 70, onQuantityChange }) => {
+export const CheckoutSummary = ({ items = [], deliveryCharge = 70, onQuantityChange, onColorChange }) => {
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const total = subtotal + deliveryCharge;
   const itemCount = items.reduce((acc, i) => acc + i.quantity, 0);
@@ -18,50 +18,72 @@ export const CheckoutSummary = ({ items = [], deliveryCharge = 70, onQuantityCha
 
       {/* Item list with quantity controls */}
       <div className="max-h-72 overflow-y-auto space-y-3 pr-1 divide-y divide-slate-100 min-w-0 w-full">
-        {items.map((item) => (
-          <div key={item.id} className="pt-3 first:pt-0 flex items-start gap-3 text-xs sm:text-sm min-w-0 w-full">
-            {/* Thumbnail */}
-            <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-100 p-0.5 shrink-0 overflow-hidden">
-              <img src={item.image} alt={item.name} className="w-full h-full object-contain" />
-            </div>
+        {items.map((item) => {
+          const colorList = Array.isArray(item.colors) && item.colors.length > 0 ? item.colors : ['Black', 'White'];
+          const currentColor = item.selectedColor || item.color || colorList[0];
 
-            <div className="flex-1 min-w-0">
-              <p className="font-semibold text-slate-800 truncate leading-snug" title={item.name}>
-                {item.name}
-              </p>
-              <p className="text-slate-400 text-[11px] mt-0.5">Unit: ৳{formatPrice(item.price)}</p>
-
-              {/* Quantity stepper */}
-              <div className="flex items-center gap-1.5 sm:gap-2 mt-2">
-                <button
-                  type="button"
-                  aria-label="Decrease quantity"
-                  onClick={() => onQuantityChange && onQuantityChange(item.id, -1)}
-                  disabled={item.quantity <= 1}
-                  className="w-6 h-6 rounded-md border border-slate-200 bg-slate-50 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-colors cursor-pointer shrink-0"
-                >
-                  <Minus className="w-3 h-3 text-slate-600" />
-                </button>
-                <span className="w-6 text-center font-semibold text-slate-800 text-xs sm:text-sm tabular-nums">
-                  {item.quantity}
-                </span>
-                <button
-                  type="button"
-                  aria-label="Increase quantity"
-                  onClick={() => onQuantityChange && onQuantityChange(item.id, 1)}
-                  className="w-6 h-6 rounded-md border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center justify-center transition-colors cursor-pointer shrink-0"
-                >
-                  <Plus className="w-3 h-3 text-slate-600" />
-                </button>
+          return (
+            <div key={item.id} className="pt-3 first:pt-0 flex items-start gap-3 text-xs sm:text-sm min-w-0 w-full">
+              {/* Thumbnail */}
+              <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-100 p-0.5 shrink-0 overflow-hidden">
+                <img src={item.image} alt={item.name} className="w-full h-full object-contain" />
               </div>
-            </div>
 
-            {/* Line total */}
-            <span className="font-bold text-slate-900 shrink-0 pt-0.5 whitespace-nowrap ml-1 text-right text-xs sm:text-sm">
-              ৳{formatPrice(item.price * item.quantity)}
-            </span>
-          </div>
-        ))}
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-slate-800 truncate leading-snug" title={item.name}>
+                  {item.name}
+                </p>
+                <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                  <span className="text-slate-400 text-[11px]">Unit: ৳{formatPrice(item.price)}</span>
+                  {/* Color Selector */}
+                  <div className="flex items-center gap-1">
+                    <span className="text-[10px] text-slate-400 font-medium">Color:</span>
+                    <select
+                      value={currentColor}
+                      onChange={(e) => onColorChange && onColorChange(item.id, e.target.value)}
+                      className="text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-200 rounded px-1.5 py-0.5 focus:outline-none cursor-pointer"
+                    >
+                      {colorList.map((c) => (
+                        <option key={c} value={c}>
+                          {c}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Quantity stepper */}
+                <div className="flex items-center gap-1.5 sm:gap-2 mt-2">
+                  <button
+                    type="button"
+                    aria-label="Decrease quantity"
+                    onClick={() => onQuantityChange && onQuantityChange(item.id, -1)}
+                    disabled={item.quantity <= 1}
+                    className="w-6 h-6 rounded-md border border-slate-200 bg-slate-50 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                  >
+                    <Minus className="w-3 h-3 text-slate-600" />
+                  </button>
+                  <span className="w-6 text-center font-semibold text-slate-800 text-xs sm:text-sm tabular-nums">
+                    {item.quantity}
+                  </span>
+                  <button
+                    type="button"
+                    aria-label="Increase quantity"
+                    onClick={() => onQuantityChange && onQuantityChange(item.id, 1)}
+                    className="w-6 h-6 rounded-md border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                  >
+                    <Plus className="w-3 h-3 text-slate-600" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Line total */}
+              <span className="font-bold text-slate-900 shrink-0 pt-0.5 whitespace-nowrap ml-1 text-right text-xs sm:text-sm">
+                ৳{formatPrice(item.price * item.quantity)}
+              </span>
+            </div>
+          );
+        })}
       </div>
 
       {/* Totals Breakdown for COD Prepayment */}
