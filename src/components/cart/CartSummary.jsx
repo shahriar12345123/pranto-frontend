@@ -86,7 +86,7 @@ export const CartSummary = ({ deliveryCharge = 70, isCheckout = false }) => {
         </div>
         <div className="flex items-center gap-2">
           <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span>7-day easy warranty & replacement support</span>
+          <span>Official warranty & customer support</span>
         </div>
       </div>
     </div>

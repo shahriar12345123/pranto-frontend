@@ -35,21 +35,21 @@ export const Home = () => {
   const heroBanners = [
     {
       id: 1,
-      tag: "Official 7 Days Warranty",
+      tag: "Official Warranty Support",
       tagIcon: Zap,
       tagColor: "bg-blue-50 border-blue-200/80 text-blue-700",
       title: "Hoco WQ34plus.",
       titleHighlight: "Only ৳790.",
       highlightColor: "text-blue-600",
-      description: "Experience premium TWS sound with the Hoco WQ34plus. Featuring 7 days warranty, 3 days replacement guarantee, 250 pcs in stock, and nationwide Cash on Delivery.",
+      description: "Experience premium TWS sound with the Hoco WQ34plus. Featuring official warranty support, 250 pcs in stock, and nationwide Cash on Delivery.",
       cta1Text: "Buy Now - ৳790",
       cta1Link: "/product/hoco-wq34plus",
       cta2Text: "Shop Earbuds",
       cta2Link: "/shop",
       image: "https://pub-844c0557c33f43fb8bc62d1b17aa1e96.r2.dev/products/prod-001/image-1.jpg",
       imageAlt: "Hoco WQ34plus Wireless Earbuds",
-      badgeTitle: "7 Days Warranty",
-      badgeSubtitle: "3 Days Replacement",
+      badgeTitle: "Official Warranty",
+      badgeSubtitle: "Authentic Product",
       badgeIcon: ShieldCheck,
       badgeIconColor: "bg-emerald-50 text-emerald-600",
       floatingStockText: "250 In Stock",
@@ -87,7 +87,7 @@ export const Home = () => {
       title: "UISI Neckband.",
       titleHighlight: "Only ৳899.",
       highlightColor: "text-emerald-600",
-      description: "Ultra-flexible sport wireless neckband with magnetic earbuds, deep bass tuning, 3 months warranty, 3 months guarantee, 7 days replacement, and 120 pcs stock.",
+      description: "Ultra-flexible sport wireless neckband with magnetic earbuds, deep bass tuning, 3 months warranty, 3 months guarantee, and 120 pcs stock.",
       cta1Text: "Buy Now - ৳899",
       cta1Link: "/product/uisi-neckband",
       cta2Text: "Explore Shop",
@@ -95,7 +95,7 @@ export const Home = () => {
       image: "https://pub-844c0557c33f43fb8bc62d1b17aa1e96.r2.dev/products/prod-003/image-1.jpg",
       imageAlt: "UISI Bluetooth Neckband",
       badgeTitle: "3 Months Warranty",
-      badgeSubtitle: "7 Days Replacement",
+      badgeSubtitle: "3 Months Guarantee",
       badgeIcon: ShieldCheck,
       badgeIconColor: "bg-emerald-50 text-emerald-600",
       floatingStockText: "120 In Stock",
@@ -154,9 +154,16 @@ export const Home = () => {
     });
   }, [n]);
 
-  // Featured & Best Sellers from mock data
-  const featuredProducts = products.filter((p) => p.featured).slice(0, 8);
-  const bestSellers = products.filter((p) => p.bestSelling).slice(0, 8);
+  // Live products from backend DB / Admin panel
+  const featuredProducts = (products.filter((p) => p.featured).length > 0
+    ? products.filter((p) => p.featured)
+    : products
+  ).slice(0, 8);
+
+  const bestSellers = (products.filter((p) => p.bestSelling).length > 0
+    ? products.filter((p) => p.bestSelling)
+    : products
+  ).slice(0, 8);
 
   const homeSchema = {
     "@context": "https://schema.org",
@@ -456,6 +463,32 @@ export const Home = () => {
         </div>
 
         <ProductGrid products={bestSellers} />
+      </section>
+
+      {/* 5b. ALL PRODUCTS & NEW ARRIVALS (Catalog including Admin products) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 sm:mb-8 md:mb-10 gap-3 sm:gap-4">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-600 mb-1 block">
+              Full Store Catalog
+            </span>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
+              All Products & New Arrivals
+            </h2>
+            <p className="text-xs sm:text-sm md:text-base text-slate-500 mt-0.5 sm:mt-1">
+              Explore all gadgets added to our store with fast Cash on Delivery across Bangladesh.
+            </p>
+          </div>
+          <Link
+            to="/shop"
+            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+          >
+            <span>Browse Full Shop</span>
+            <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          </Link>
+        </div>
+
+        <ProductGrid products={products} />
       </section>
 
       {/* 6. WHY CHOOSE US */}

@@ -315,7 +315,7 @@ export const ProductDetails = () => {
               </div>
               <div className="flex items-center gap-2">
                 <RotateCcw className="w-4 h-4 text-purple-600 shrink-0" />
-                <span>7 Days Replacement</span>
+                <span>Official Warranty Support</span>
               </div>
             </div>
           </div>

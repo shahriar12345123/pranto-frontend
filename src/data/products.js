@@ -12,8 +12,8 @@ export const products = [
     stock: 250,
     featured: true,
     bestSelling: true,
-    shortDescription: "High-performance TWS wireless earbuds featuring crystal-clear sound, ergonomic lightweight fit, smart touch controls, 7 days warranty, and 3 days replacement guarantee.",
-    description: "The Hoco WQ34plus True Wireless Earbuds deliver punchy dynamic bass, crisp treble, and reliable Bluetooth connectivity in an ultra-compact charging case. Designed for daily workouts, commuting, and hands-free calls with 7 days official warranty and 3 days replacement guarantee.",
+    shortDescription: "High-performance TWS wireless earbuds featuring crystal-clear sound, ergonomic lightweight fit, smart touch controls, and official warranty support.",
+    description: "The Hoco WQ34plus True Wireless Earbuds deliver punchy dynamic bass, crisp treble, and reliable Bluetooth connectivity in an ultra-compact charging case. Designed for daily workouts, commuting, and hands-free calls with official warranty support.",
     images: [
       "https://pub-844c0557c33f43fb8bc62d1b17aa1e96.r2.dev/products/prod-001/image-1.jpg",
       "https://pub-844c0557c33f43fb8bc62d1b17aa1e96.r2.dev/products/prod-001/image-2.jpg"
@@ -24,8 +24,7 @@ export const products = [
       { key: "Model", value: "WQ34plus" },
       { key: "Price", value: "৳790" },
       { key: "Stock Available", value: "250 pcs" },
-      { key: "Warranty", value: "7 Days" },
-      { key: "Replacement", value: "3 Days" },
+      { key: "Warranty", value: "Official Warranty" },
       { key: "Connectivity", value: "Bluetooth 5.3" },
       { key: "Playtime", value: "Up to 24 Hours (with charging case)" },
       { key: "Charging Port", value: "Type-C Fast Charging" }
@@ -76,8 +75,8 @@ export const products = [
     stock: 120,
     featured: true,
     bestSelling: true,
-    shortDescription: "Ergonomic flexible wireless neckband delivering rich dynamic bass, magnetic earbuds, 3 months warranty, 3 months guarantee, and 7 days replacement in sleek Black.",
-    description: "The UISI Neckband Bluetooth Earphone is engineered for active daily workouts, fitness, and clear hands-free voice calls. Features high-elasticity neckband comfort, deep bass dynamic acoustic drivers, magnetic earbud clasp, 3 months warranty, 3 months guarantee, and 7 days replacement support.",
+    shortDescription: "Ergonomic flexible wireless neckband delivering rich dynamic bass, magnetic earbuds, 3 months warranty, and 3 months guarantee in sleek Black.",
+    description: "The UISI Neckband Bluetooth Earphone is engineered for active daily workouts, fitness, and clear hands-free voice calls. Features high-elasticity neckband comfort, deep bass dynamic acoustic drivers, magnetic earbud clasp, 3 months warranty, and 3 months guarantee support.",
     images: [
       "https://pub-844c0557c33f43fb8bc62d1b17aa1e96.r2.dev/products/prod-003/image-1.jpg",
       "https://pub-844c0557c33f43fb8bc62d1b17aa1e96.r2.dev/products/prod-003/image-2.jpg"
@@ -91,7 +90,6 @@ export const products = [
       { key: "Color Available", value: "Black" },
       { key: "Warranty", value: "3 Months" },
       { key: "Guarantee", value: "3 Months" },
-      { key: "Replacement", value: "7 Days" },
       { key: "Connectivity", value: "Bluetooth Wireless" },
       { key: "Playtime", value: "Up to 12-15 Hours" },
       { key: "Design", value: "Magnetic In-Ear Neckband" },

@@ -23,7 +23,7 @@ export const FAQ = () => {
     {
       question: 'Can I return or replace a product if it has defects?',
       answer:
-        'Yes, we offer a 7-day hassle-free replacement warranty for manufacturing defects. Please contact our support team within 7 days of receiving the item with unboxing footage/photos.',
+        'Yes, we offer a hassle-free replacement warranty for manufacturing defects. Please contact our support team upon receiving the item with unboxing footage/photos.',
     },
     {
       question: 'Are all your products 100% original and authentic?',
